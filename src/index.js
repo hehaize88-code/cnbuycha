@@ -7,6 +7,7 @@ import {
   relatedProducts,
   saveProduct,
 } from "./db.js";
+import { APP_JS, SITE_CSS } from "./client-assets.js";
 import {
   renderAdminProducts,
   renderErrorPage,
@@ -363,12 +364,36 @@ function isStaticPath(pathname) {
   return pathname === "/favicon.ico" || pathname.startsWith("/template/") || pathname.startsWith("/public/") || /\.(?:css|js|svg|png|jpe?g|gif|webp|ico|woff2?)$/i.test(pathname);
 }
 
+function serveEmbeddedAsset(request, pathname) {
+  if (request.method !== "GET" && request.method !== "HEAD") return null;
+  let body;
+  let contentType;
+  if (pathname === "/app.js") {
+    body = APP_JS;
+    contentType = "application/javascript; charset=utf-8";
+  } else if (pathname === "/site.css") {
+    body = SITE_CSS;
+    contentType = "text/css; charset=utf-8";
+  } else {
+    return null;
+  }
+  return new Response(request.method === "HEAD" ? null : body, {
+    headers: {
+      "Content-Type": contentType,
+      "Cache-Control": "public, max-age=31536000, immutable",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     try {
       if (url.pathname.startsWith("/uploads/")) return serveLegacyImage(request, env);
       if (url.pathname.startsWith("/media/")) return serveStoredImage(env, url.pathname);
+      const embeddedAsset = serveEmbeddedAsset(request, url.pathname);
+      if (embeddedAsset) return embeddedAsset;
       if (isStaticPath(url.pathname)) return env.ASSETS.fetch(request);
       if (url.pathname === "/health") return Response.json({ ok: true, service: "cnbuycha" });
       if (url.pathname === "/yc.php" || url.pathname.startsWith("/yc.php/")) return adminRoute(request, env, url);

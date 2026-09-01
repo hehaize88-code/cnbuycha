@@ -72,7 +72,17 @@ test("restored storefront and admin product workflow", async () => {
   const pending = [];
   const ctx = { waitUntil: (promise) => pending.push(promise) };
 
-  let response = await worker.fetch(new Request("https://www.cnbuycha.com/"), env, ctx);
+  let response = await worker.fetch(new Request("https://www.cnbuycha.com/app.js?v=4"), env, ctx);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("Content-Type"), /application\/javascript/);
+  assert.match(await response.text(), /data-product-gallery/);
+
+  response = await worker.fetch(new Request("https://www.cnbuycha.com/site.css?v=4"), env, ctx);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("Content-Type"), /text\/css/);
+  assert.match(await response.text(), /\.gallery-track/);
+
+  response = await worker.fetch(new Request("https://www.cnbuycha.com/"), env, ctx);
   assert.equal(response.status, 200);
   let body = await response.text();
   assert.match(body, /Latest Products/);

@@ -3,7 +3,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 const root = path.resolve(new URL("..", import.meta.url).pathname);
-const sourceFiles = ["src/index.js", "src/db.js", "src/html.js", "src/security.js", "src/media.js", "public-app/app.js"];
+const sourceFiles = ["src/index.js", "src/db.js", "src/html.js", "src/security.js", "src/media.js", "src/client-assets.js", "public-app/app.js"];
 for (const relative of sourceFiles) {
   const result = spawnSync(process.execPath, ["--check", path.join(root, relative)], { encoding: "utf8" });
   if (result.status !== 0) throw new Error(result.stderr || `${relative} failed syntax validation`);
