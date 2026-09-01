@@ -87,6 +87,13 @@ test("restored storefront and admin product workflow", async () => {
   assert.equal(response.status, 200);
   body = await response.text();
   assert.match(body, /Select Purchase Platform/);
+  assert.match(body, /data-product-gallery/);
+  assert.match(body, /data-gallery-track/);
+  assert.match(body, /data-gallery-slide/);
+  assert.match(body, /data-gallery-index="0"/);
+  assert.match(body, /aria-label="Previous product image"/);
+  assert.match(body, /Swipe or drag/);
+  assert.match(body, /\/app\.js\?v=4/);
   assert.ok(body.includes(`>${(Number(sample.price) / 7.2).toFixed(2)}<`));
   await Promise.all(pending);
 

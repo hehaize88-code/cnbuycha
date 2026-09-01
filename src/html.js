@@ -53,9 +53,9 @@ function head({ title, description, canonical, css = "home" }, settings) {
   <meta property="og:description" content="${escapeHtml(summary)}">
   <meta property="og:type" content="website">
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/template/moban/pc/static/css/header.css?v=3">
-  <link rel="stylesheet" href="/template/moban/pc/static/css/${css}.css?v=3">
-  <link rel="stylesheet" href="/site.css?v=3">
+  <link rel="stylesheet" href="/template/moban/pc/static/css/header.css?v=4">
+  <link rel="stylesheet" href="/template/moban/pc/static/css/${css}.css?v=4">
+  <link rel="stylesheet" href="/site.css?v=4">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>`;
 }
@@ -92,7 +92,7 @@ function footer(settings) {
     <p class="copyright">© ${new Date().getUTCFullYear()} ${escapeHtml(settings.web_name || "CnbuySheet")}</p>
   </div>
 </footer>
-<script src="/app.js?v=3" defer></script>
+<script src="/app.js?v=4" defer></script>
 </body></html>`;
 }
 
@@ -223,7 +223,13 @@ function purchasePlatforms(sourceId) {
 
 export function renderProductDetail({ settings, product, related, origin }) {
   const canonical = `${origin}${productUrl(product)}`;
-  const gallery = [product.main_image, ...product.images.map((image) => image.url)].filter(Boolean).filter((value, index, array) => array.indexOf(value) === index);
+  const gallery = [product.main_image, ...product.images.map((image) => image.url)]
+    .filter(Boolean)
+    .filter((value, index, array) => array.indexOf(value) === index);
+  if (!gallery.length) gallery.push(PLACEHOLDER);
+  const hasMultipleImages = gallery.length > 1;
+  const gallerySlides = gallery.map((image, index) => `<div class="gallery-slide" data-gallery-slide role="group" aria-label="${index + 1} of ${gallery.length}"><img${index === 0 ? " id=\"mainProductImage\"" : ""} src="${escapeHtml(safeUrl(image, PLACEHOLDER))}" alt="${escapeHtml(product.title)} ${index + 1}" draggable="false" ${index === 0 ? "fetchpriority=\"high\"" : "loading=\"lazy\""} decoding="async"></div>`).join("");
+  const galleryThumbnails = gallery.map((image, index) => `<button class="thumbnail${index === 0 ? " active" : ""}" type="button" data-gallery-index="${index}" aria-label="Show product image ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"><img src="${escapeHtml(safeUrl(image, PLACEHOLDER))}" alt="" loading="lazy" decoding="async"></button>`).join("");
   const platforms = purchasePlatforms(product.source_id);
   const sourceUrl = safeUrl(product.source_url || `https://weidian.com/item.html?itemID=${encodeURIComponent(product.source_id || "")}`);
   return `${head({ title: product.seo_title || product.title, description: product.seo_description || product.title, canonical, css: "detail" }, settings)}
@@ -231,7 +237,15 @@ export function renderProductDetail({ settings, product, related, origin }) {
 <main class="detail-container">
   <div class="breadcrumb"><a href="/">Home</a> / <a href="/${escapeHtml(product.category_slug)}/">${escapeHtml(product.category_name)}</a> / <span>${escapeHtml(product.title)}</span></div>
   <section class="product-detail">
-    <div class="product-gallery"><div class="main-image"><img id="mainProductImage" src="${escapeHtml(safeUrl(gallery[0], PLACEHOLDER))}" alt="${escapeHtml(product.title)}"></div><div class="thumbnail-container">${gallery.map((image, index) => `<button class="thumbnail${index === 0 ? " active" : ""}" type="button" data-gallery-src="${escapeHtml(safeUrl(image, PLACEHOLDER))}"><img src="${escapeHtml(safeUrl(image, PLACEHOLDER))}" alt="${escapeHtml(product.title)} ${index + 1}" loading="lazy"></button>`).join("")}</div></div>
+    <div class="product-gallery" data-product-gallery>
+      <div class="main-image gallery-viewport" data-gallery-viewport tabindex="0" role="region" aria-roledescription="carousel" aria-label="Product image gallery">
+        <div class="gallery-track" data-gallery-track>${gallerySlides}</div>
+        ${hasMultipleImages ? `<button class="gallery-nav gallery-prev" type="button" data-gallery-prev aria-label="Previous product image"><i class="fas fa-chevron-left" aria-hidden="true"></i></button><button class="gallery-nav gallery-next" type="button" data-gallery-next aria-label="Next product image"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>` : ""}
+        <div class="gallery-counter" aria-live="polite"><span data-gallery-current>1</span><span aria-hidden="true"> / </span>${gallery.length}</div>
+        ${hasMultipleImages ? `<div class="gallery-swipe-hint" aria-hidden="true"><i class="fas fa-arrows-left-right"></i><span>Swipe or drag</span></div>` : ""}
+      </div>
+      <div class="thumbnail-container" data-gallery-thumbnails aria-label="Product image thumbnails">${galleryThumbnails}</div>
+    </div>
     <div class="product-info"><h1 class="product-title">${escapeHtml(product.title)}</h1><div class="product-id">ID: ${escapeHtml(product.source_id)}</div><div class="product-meta"><div class="product-price" data-currency="USD" title="Converted from CNY">${formatUsdFromCny(product.price, settings)}</div><div class="product-views"><i class="fas fa-eye"></i><span>${Number(product.views || 0)}</span></div></div>
       <div class="product-actions"><button class="action-btn buy-now-btn" type="button" data-open-platforms><i class="fas fa-shopping-cart"></i> Buy Link</button><a href="${escapeHtml(sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer" class="action-btn weidian-btn"><i class="fas fa-store"></i> Weidian Link</a><div class="actions-row"><button class="action-btn copy-link-btn" type="button" data-copy-url="${escapeHtml(canonical)}"><i class="fas fa-share-alt"></i> Share</button></div></div>
       <div class="product-info-section"><div class="product-description">How to bypass “Non-purchasable item” warnings automatically!</div><a href="/video" class="action-btn how-to-buy-btn"><i class="fas fa-question-circle"></i> Tutorial</a></div>

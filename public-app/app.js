@@ -29,14 +29,91 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelector(".carousel-prev")?.addEventListener("click", () => scrollTrack(-1));
   document.querySelector(".carousel-next")?.addEventListener("click", () => scrollTrack(1));
 
-  const mainImage = document.getElementById("mainProductImage");
-  document.querySelectorAll("[data-gallery-src]").forEach((button) => {
-    button.addEventListener("click", () => {
-      if (mainImage) mainImage.src = button.dataset.gallerySrc;
-      document.querySelectorAll("[data-gallery-src]").forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
+  const gallery = document.querySelector("[data-product-gallery]");
+  if (gallery) {
+    const viewport = gallery.querySelector("[data-gallery-viewport]");
+    const galleryTrack = gallery.querySelector("[data-gallery-track]");
+    const slides = [...gallery.querySelectorAll("[data-gallery-slide]")];
+    const thumbnails = [...gallery.querySelectorAll("[data-gallery-index]")];
+    const thumbnailsTrack = gallery.querySelector("[data-gallery-thumbnails]");
+    const previousButton = gallery.querySelector("[data-gallery-prev]");
+    const nextButton = gallery.querySelector("[data-gallery-next]");
+    const currentLabel = gallery.querySelector("[data-gallery-current]");
+    let currentIndex = 0;
+    let scrollFrame = 0;
+    let drag = null;
+
+    const normalizedIndex = (value) => Math.min(slides.length - 1, Math.max(0, Number(value) || 0));
+    const updateGalleryState = (value, focusThumbnail = false) => {
+      currentIndex = normalizedIndex(value);
+      if (currentLabel) currentLabel.textContent = String(currentIndex + 1);
+      if (previousButton) previousButton.disabled = currentIndex === 0;
+      if (nextButton) nextButton.disabled = currentIndex === slides.length - 1;
+      thumbnails.forEach((thumbnail, index) => {
+        const active = index === currentIndex;
+        thumbnail.classList.toggle("active", active);
+        thumbnail.setAttribute("aria-current", active ? "true" : "false");
+      });
+      const activeThumbnail = thumbnails[currentIndex];
+      if (activeThumbnail && thumbnailsTrack) {
+        const left = activeThumbnail.offsetLeft - (thumbnailsTrack.clientWidth - activeThumbnail.offsetWidth) / 2;
+        thumbnailsTrack.scrollTo({ left: Math.max(0, left), behavior: focusThumbnail ? "smooth" : "auto" });
+      }
+    };
+    const goToImage = (value, behavior = "smooth") => {
+      const nextIndex = normalizedIndex(value);
+      galleryTrack?.scrollTo({ left: nextIndex * galleryTrack.clientWidth, behavior });
+      updateGalleryState(nextIndex, behavior === "smooth");
+    };
+
+    previousButton?.addEventListener("click", () => goToImage(currentIndex - 1));
+    nextButton?.addEventListener("click", () => goToImage(currentIndex + 1));
+    thumbnails.forEach((thumbnail) => {
+      thumbnail.addEventListener("click", () => goToImage(thumbnail.dataset.galleryIndex));
     });
-  });
+    viewport?.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      event.preventDefault();
+      goToImage(currentIndex + (event.key === "ArrowRight" ? 1 : -1));
+    });
+    galleryTrack?.addEventListener("scroll", () => {
+      window.cancelAnimationFrame(scrollFrame);
+      scrollFrame = window.requestAnimationFrame(() => {
+        if (!galleryTrack.clientWidth) return;
+        updateGalleryState(Math.round(galleryTrack.scrollLeft / galleryTrack.clientWidth));
+      });
+    }, { passive: true });
+
+    galleryTrack?.addEventListener("pointerdown", (event) => {
+      if (event.pointerType !== "mouse" || event.button !== 0) return;
+      drag = { id: event.pointerId, startX: event.clientX, startScroll: galleryTrack.scrollLeft, moved: false };
+      galleryTrack.setPointerCapture(event.pointerId);
+      galleryTrack.classList.add("dragging");
+    });
+    galleryTrack?.addEventListener("pointermove", (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const distance = event.clientX - drag.startX;
+      if (Math.abs(distance) > 4) drag.moved = true;
+      galleryTrack.scrollLeft = drag.startScroll - distance;
+      if (drag.moved) event.preventDefault();
+    });
+    const finishDrag = (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const moved = drag.moved;
+      drag = null;
+      galleryTrack.classList.remove("dragging");
+      if (galleryTrack.hasPointerCapture(event.pointerId)) galleryTrack.releasePointerCapture(event.pointerId);
+      if (moved && galleryTrack.clientWidth) goToImage(Math.round(galleryTrack.scrollLeft / galleryTrack.clientWidth));
+    };
+    galleryTrack?.addEventListener("pointerup", finishDrag);
+    galleryTrack?.addEventListener("pointercancel", finishDrag);
+    galleryTrack?.addEventListener("dragstart", (event) => event.preventDefault());
+
+    if ("ResizeObserver" in window && galleryTrack) {
+      new ResizeObserver(() => goToImage(currentIndex, "auto")).observe(galleryTrack);
+    }
+    updateGalleryState(0);
+  }
 
   const modal = document.getElementById("platformModal");
   const closeModal = () => {
