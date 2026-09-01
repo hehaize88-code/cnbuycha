@@ -1,0 +1,1443 @@
+@import url('common.css');
+#particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: auto;
+    background: linear-gradient(135deg, rgba(10, 25, 47, 0.9) 0%, rgba(0, 0, 0, 0.9) 100%); /* 更时尚的渐变背景 */
+    opacity: 0.8; /* 降低整体不透明度，使内容更清晰 */
+}
+
+.particles-js-canvas-el {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    mix-blend-mode: screen; /* 添加混合模式，让粒子效果更加柔和 */
+}
+
+/* 英雄区域样式 */
+.hero {
+    min-height: calc(100vh - 50px); /* 减去导航栏高度 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px 80px; /* 减少底部内边距 */
+    position: relative;
+    overflow: hidden;
+    margin-top: 0; /* 移除负的margin-top */
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 30%, rgba(189, 147, 249, 0.15) 0%, transparent 70%);
+    z-index: 0;
+    animation: pulse 8s infinite alternate;
+}
+
+.hero-content {
+    max-width: 800px;
+    text-align: center;
+    z-index: 2;
+    padding: 0; /* 移除内边距 */
+    animation: fadeIn 1.2s ease-out;
+    position: relative;
+}
+
+.hero .subheading {
+    display: inline-block;
+    font-size: 1.1rem;
+    color: var(--cyan);
+    margin-bottom: 1.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    padding: 0 15px;
+    opacity: 0;
+    animation: slideDown 0.8s ease forwards 0.3s;
+}
+
+.hero .subheading::before,
+.hero .subheading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 1px;
+    background: var(--cyan);
+    opacity: 0.6;
+}
+
+.hero .subheading::before {
+    left: -45px;
+}
+
+.hero .subheading::after {
+    right: -45px;
+}
+
+.hero h1 {
+    font-size: 4.2rem; /* 增大字体 */
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    background:var(--cyan);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    opacity: 0;
+    animation: slideUp 0.8s ease forwards 0.6s;
+    position: relative;
+}
+
+.hero h1 .highlight {
+    color: var(--cyan);
+    background: linear-gradient(45deg, var(--cyan), var(--neon-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    display: inline-block;
+}
+
+.hero h1 .highlight::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(45deg, var(--cyan), var(--neon-blue));
+    opacity: 0.5;
+    border-radius: 10px;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: var(--light-gray);
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    opacity: 0;
+    animation: slideUp 0.8s ease forwards 0.9s;
+}
+
+.button-container {
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    opacity: 0;
+    animation: slideUp 0.8s ease forwards 1.2s;
+}
+
+.button-container a {
+    transform: scale(1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button-container a:hover {
+    transform: translateY(-5px) scale(1.05);
+}
+
+.glow-button {
+    box-shadow: 0 0 15px rgba(100, 255, 218, 0.4);
+}
+
+.glow-button:hover {
+    box-shadow: 0 0 25px rgba(100, 255, 218, 0.7);
+}
+
+.outline-button:hover {
+    background-color: rgba(100, 255, 218, 0.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from { 
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+    100% { opacity: 0.5; transform: scale(1); }
+}
+
+/* 分类模块样式 */
+.categories {
+    margin-top: -60px; /* 调整负边距拉近与英雄区域的距离 */
+    padding: 0 0 20px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+    margin: 0 auto;
+    max-width: var(--container-width);
+    padding: 0 15px; /* 添加两侧内边距 */
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.2rem 0.8rem;
+    text-decoration: none;
+    color: var(--white);
+}
+
+.category-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 191, 255, 0.2);
+    border-color: var(--cyan);
+}
+
+.category-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--cyan);
+    transition: var(--transition);
+}
+
+.category-item:hover .category-icon {
+    transform: scale(1.1);
+    color: var(--neon-blue);
+}
+
+.category-item h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* 产品卡盘样式 */
+.featured-products {
+    margin: 30px 0;
+    padding: 30px 0;
+}
+
+.product-carousel-container {
+    position: relative;
+    overflow: visible;
+    padding: 0 40px;
+    margin: 30px auto;
+    max-width: calc(var(--container-width) - 80px);
+    width: 100%;
+}
+
+.products-carousel {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.3s ease-in-out;
+    width: 100%;
+    touch-action: pan-y;
+    cursor: grab;
+    position: relative;
+    z-index: 1;
+}
+
+.carousel-track:active {
+    cursor: grabbing;
+}
+
+.product-card {
+    flex: 0 0 calc((100% - 40px) / 3);
+    max-width: calc((100% - 40px) / 3);
+    min-width: 0;
+    position: relative;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    background: var(--glass-bg);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-y pinch-zoom;
+}
+
+.product-card a {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+}
+
+.product-image {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--glass-bg);
+    transform: translateZ(0);
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+}
+
+.product-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: var(--glass-bg);
+    transition: transform 0.4s ease; /* 稍微延长过渡时间 */
+    transform: translateZ(0); /* 添加硬件加速 */
+    will-change: transform; /* 提前告知浏览器元素将会变化 */
+    pointer-events: none;
+}
+
+.product-info {
+    padding: 12px 8px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-title {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    pointer-events: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.product-info h3 {
+    font-size: 1.1rem;
+    color: var(--white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.product-price {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--cyan);
+}
+
+.product-price::before {
+    content: '$';
+    font-size: 0.9em;
+    margin-right: 2px;
+}
+
+.product-views {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--light-gray);
+    font-size: 0.9rem;
+}
+
+.product-views i {
+    color: var(--cyan);
+}
+
+.add-to-cart-btn {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--cyan);
+    border-radius: 25px;
+    background: transparent;
+    color: var(--cyan);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: auto;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.add-to-cart-btn:hover {
+    background: rgba(100, 255, 218, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+}
+
+/* 查看全部商品链接 */
+.view-all-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.view-all-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 25px;
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    border-radius: 30px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.view-all-btn:hover {
+    background: rgba(100, 255, 218, 0.1);
+    box-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+    transform: translateY(-2px);
+}
+
+.view-all-btn i {
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+}
+
+.view-all-btn:hover i {
+    transform: translateX(5px);
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+    .product-card {
+        flex: 0 0 calc((100% - 20px) / 2);
+        max-width: calc((100% - 20px) / 2);
+    }
+    
+    .product-carousel-container {
+        max-width: calc(100% - 60px);
+        padding: 0 30px;
+    }
+}
+
+/* 修改为更精细的断点控制 */
+@media (min-width: 1201px) and (max-width: 1399px) {
+    .product-card {
+        flex: 0 0 calc((100% - 40px) / 3); /* 中等宽度屏幕显示3个产品 */
+        max-width: calc((100% - 40px) / 3);
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1200px) {
+    .product-card {
+        flex: 0 0 calc((100% - 30px) / 3); /* 较小宽度显示3个但减小间距 */
+        max-width: calc((100% - 30px) / 3);
+    }
+    
+    .carousel-track {
+        gap: 15px; /* 减小产品间间距 */
+    }
+    
+    .product-carousel-container {
+        max-width: calc(100% - 50px);
+        padding: 0 25px;
+    }
+    
+    /* 缩小产品卡片内部元素 */
+    .product-info h3 {
+        font-size: 1rem;
+    }
+    
+    .product-price {
+        font-size: 1.3rem;
+    }
+    
+    .product-views {
+        font-size: 0.85rem;
+    }
+    
+    .add-to-cart-btn {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .product-card {
+        flex: 0 0 calc((100% - 20px) / 2); /* 平板设备显示2个产品 */
+        max-width: calc((100% - 20px) / 2);
+    }
+    
+    .product-carousel-container {
+        padding: 0 35px;
+    }
+    
+    .carousel-track {
+        gap: 20px;
+    }
+}
+
+/* 增加新的媒体查询，优化各种屏幕尺寸下的产品显示 */
+@media (min-width: 1400px) {
+    .product-card {
+        flex: 0 0 calc((100% - 60px) / 4); /* 大屏显示4个产品 */
+        max-width: calc((100% - 60px) / 4);
+    }
+}
+
+@media (min-width: 1800px) {
+    .product-card {
+        flex: 0 0 calc((100% - 80px) / 5); /* 超大屏显示5个产品 */
+        max-width: calc((100% - 80px) / 5);
+    }
+    
+    .product-carousel-container {
+        max-width: var(--container-width);
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding-top: 90px; /* 减少顶部内边距 */
+        padding-bottom: 60px; /* 减少底部内边距 */
+        min-height: auto; /* 移除最小高度限制，让内容决定高度 */
+    }
+    
+    .categories {
+        margin-top: -10px; /* 减小负边距，拉近与英雄区域的距离 */
+    }
+
+    .category-grid {
+        gap: 12px; /* 减小分类卡片间距 */
+        padding: 0 12px;
+    }
+
+    .category-item {
+        padding: 0.8rem 0.6rem; /* 减小分类卡片内边距 */
+    }
+
+    .category-icon {
+        margin-bottom: 0.6rem; /* 减少图标下方边距 */
+    }
+
+    .category-item h3 {
+        font-size: 0.9rem; /* 减小文字大小 */
+    }
+
+    .hero h1 {
+        font-size: 3.2rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .hero p {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .button-container {
+        flex-direction: row; /* 改为水平排列 */
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap; /* 容器不够宽时自动换行 */
+        margin-top: 15px;
+    }
+    
+    .glow-button, .outline-button {
+        padding: 10px 15px; /* 减小内边距，按钮更紧凑 */
+        min-width: 120px; /* 设置最小宽度 */
+        width: auto; /* 自适应宽度 */
+        font-size: 0.9rem; /* 稍微减小字体 */
+    }
+    
+    .btn-icon {
+        margin-right: 5px; /* 减小图标右侧间距 */
+    }
+    
+    .floating-shape {
+        opacity: 0.2;
+    }
+    
+    .shape1 {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .shape2 {
+        width: 70px;
+        height: 70px;
+        bottom: 25%; /* 调整位置，避免遮挡按钮 */
+        right: 10%;
+    }
+    
+    .shape3 {
+        width: 50px;
+        height: 50px;
+        top: 65%;
+        left: 15%;
+    }
+
+    .product-carousel-container {
+        max-width: calc(100% - 40px);
+        padding: 0 20px;
+        margin: 20px auto;
+    }
+    
+    .product-card {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 10px; /* 减小内边距使内容更紧凑 */
+    }
+    
+    .product-info {
+        padding: 10px 6px;
+    }
+    
+    .product-price {
+        font-size: 1.3rem;
+    }
+    
+    .carousel-arrow {
+        width: 28px;
+        height: 28px;
+        opacity: 0.6;
+    }
+    
+    .carousel-prev {
+        left: -14px;
+    }
+    
+    .carousel-next {
+        right: -14px;
+    }
+
+    .about-content {
+        padding: 15px 0;
+    }
+
+    .stats-container {
+        gap: 25px;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .tutorial-buttons {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .tutorial-btn {
+        width: 100%;
+        max-width: 250px;
+        margin: 0 auto;
+    }
+    
+    .platform-card {
+        width: 180px;
+        height: 180px;
+        padding: 25px 15px;
+    }
+    
+    .platform-icon {
+        font-size: 2.8rem;
+    }
+
+    .faq-question {
+        padding: 15px;
+    }
+    
+    .faq-question h3 {
+        font-size: 1rem;
+    }
+    
+    .faq-item.active .faq-answer {
+        padding: 15px;
+    }
+
+    .platform-scroll {
+        font-size: 1rem;
+    }
+
+    .platform-item {
+        font-size: 1rem;
+        padding: 8px 20px;
+    }
+
+    #particles-js {
+        opacity: 0.6; /* 在移动设备上降低不透明度，提高可读性 */
+    }
+
+    .menu-toggle {
+        display: block;
+        z-index: 1100; /* 确保在mobile nav之上 */
+    }
+    
+    .add-to-cart-btn {
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+    
+    .product-card a {
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-card {
+        padding: 8px; /* 进一步减小内边距 */
+    }
+    
+    .product-info {
+        padding: 8px 4px;
+    }
+    
+    .add-to-cart-btn {
+        padding: 10px; /* 减小按钮内边距 */
+        font-size: 0.85rem; /* 减小按钮字体 */
+    }
+    
+    .product-price {
+        font-size: 1.2rem; /* 减小价格字体 */
+    }
+    
+    .product-views {
+        font-size: 0.8rem; /* 减小查看次数字体 */
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        padding-top: 80px; /* 进一步减少顶部内边距 */
+        padding-bottom: 40px; /* 进一步减少底部内边距 */
+    }
+    
+    .categories {
+        margin-top: 0px; /* 移除负边距 */
+        padding-top: 10px; /* 添加一点顶部内边距 */
+    }
+
+    .category-grid {
+        gap: 8px; /* 进一步减小卡片间距 */
+        padding: 0 8px;
+    }
+
+    .category-item {
+        padding: 0.6rem 0.4rem; /* 进一步减小内边距 */
+    }
+
+    .category-icon {
+        font-size: 1.5rem; /* 减小图标大小 */
+        margin-bottom: 0.4rem; /* 减少图标下方边距 */
+    }
+
+    .category-item h3 {
+        font-size: 0.9rem; /* 减小文字大小 */
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.7rem; /* 减少标题下方边距 */
+        padding: 0 10px;
+    }
+    
+    .hero .subheading {
+        font-size: 1rem;
+        margin-bottom: 0.7rem; /* 减少副标题下方边距 */
+    }
+    
+    .hero .subheading::before,
+    .hero .subheading::after {
+        width: 20px;
+    }
+    
+    .hero .subheading::before {
+        left: -25px;
+    }
+    
+    .hero .subheading::after {
+        right: -25px;
+    }
+    
+    .hero h1 .highlight::after {
+        height: 3px;
+        bottom: 3px;
+    }
+    
+    .floating-shape {
+        opacity: 0.15;
+    }
+
+    .product-carousel-container {
+        max-width: calc(100% - 30px);
+        padding: 0 15px;
+    }
+    
+    .carousel-track {
+        gap: 15px;
+    }
+    
+    .product-card {
+        padding: 10px;
+    }
+    
+    .carousel-arrow {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .carousel-prev {
+        left: -12px;
+    }
+    
+    .carousel-next {
+        right: -12px;
+    }
+
+    .view-all-btn {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+
+    .glass-tutorial-container {
+        padding: 1.5rem;
+    }
+    
+    .platform-card {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .platform-icon {
+        font-size: 2.2rem;
+    }
+
+    .about-content h3 {
+        font-size: 1.3rem;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .stat-text {
+        font-size: 0.9rem;
+    }
+
+    #particles-js {
+        opacity: 0.5; /* 在更小的屏幕上进一步降低不透明度 */
+        background: linear-gradient(135deg, rgba(10, 25, 47, 0.95) 0%, rgba(32, 18, 77, 0.95) 100%); /* 更深的背景 */
+    }
+
+    .platform-scroll {
+        font-size: 0.9rem;
+    }
+
+    .platform-item {
+        font-size: 0.9rem;
+        padding: 6px 15px;
+    }
+    
+    .platform-list::before,
+    .platform-list::after {
+        width: 50px;
+    }
+
+    .button-container {
+        margin-top: 10px; /* 减少按钮上方间距 */
+        margin-bottom: 10px; /* 减少按钮下方间距 */
+    }
+    
+    .glow-button, .outline-button {
+        padding: 8px 12px; /* 进一步减小内边距 */
+        min-width: 110px;
+        font-size: 0.85rem;
+    }
+
+    .shape1 {
+        top: 20%;
+        left: 10%;
+    }
+    
+    .shape2 {
+        bottom: 30%; /* 进一步调整位置 */
+        right: 8%;
+    }
+    
+    .shape3 {
+        top: 60%;
+        left: 15%;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem; /* 减少段落下方边距 */
+        line-height: 1.4; /* 减少行高使文字更紧凑 */
+    }
+
+    .add-to-cart-btn {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+}
+
+/* 超小屏幕设备适配 */
+@media (max-width: 359px) {
+    .button-container {
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .glow-button, .outline-button {
+        padding: 6px 10px;
+        min-width: 100px;
+        font-size: 0.8rem;
+    }
+    
+    .btn-icon {
+        font-size: 0.8rem;
+        margin-right: 3px;
+    }
+    
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+        padding: 0 5px;
+    }
+
+    .hero {
+        padding-top: 70px; /* 在超小屏幕上最小化顶部内边距 */
+        padding-bottom: 30px; /* 在超小屏幕上最小化底部内边距 */
+    }
+}
+
+/* FAQ模块样式 */
+.faq {
+    padding: 60px 0;
+    margin: 40px 0;
+}
+
+.faq-container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.faq-item {
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.faq-question h3 {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--white);
+    margin: 0;
+    transition: var(--transition);
+}
+
+.faq-icon {
+    color: var(--cyan);
+    transition: transform 0.3s ease;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 20px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.faq-answer p, 
+.faq-answer ul, 
+.faq-answer ol {
+    color: var(--light-gray);
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.faq-answer ul, 
+.faq-answer ol {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.faq-answer li {
+    margin-bottom: 8px;
+}
+
+/* FAQ激活状态 */
+.faq-item.active .faq-question {
+    border-bottom: 1px solid rgba(100, 255, 218, 0.15);
+}
+
+.faq-item.active .faq-question h3 {
+    color: var(--cyan);
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding: 25px 22px;
+}
+
+.faq-item.active .faq-answer p, 
+.faq-item.active .faq-answer ul, 
+.faq-item.active .faq-answer ol {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 教程模块样式 */
+.tutorial-module {
+    padding: 50px 0;
+    margin: 30px 0;
+}
+
+.glass-tutorial-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2.5rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.tutorial-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.tutorial-btn {
+    min-width: 180px;
+    padding: 0.9rem 1.8rem;
+    border-radius: 50px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.tutorial-btn.primary-btn {
+    background: linear-gradient(45deg, var(--cyan), var(--neon-blue));
+    color: var(--deep-blue);
+    border: none;
+}
+
+.tutorial-btn.secondary-btn {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+}
+
+.tutorial-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(100, 255, 218, 0.3);
+}
+
+.tutorial-btn .btn-icon {
+    font-size: 1.2rem;
+}
+
+/* 代理平台支持展示区样式 */
+.services {
+    padding: 60px 0;
+    margin: 30px 0;
+}
+
+.platform-showcase {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 30px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+}
+
+.platform-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px;
+}
+
+.platform-item {
+    color: var(--cyan);
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.platform-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2);
+    background: rgba(100, 255, 218, 0.15);
+}
+
+/* 轮播箭头样式 */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    background: var(--glass-bg);
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 0 15px rgba(100, 255, 218, 0.2);
+    opacity: 0.8;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.carousel-prev {
+    left: -16px;
+}
+
+.carousel-next {
+    right: -16px;
+}
+
+/* 箭头禁用状态 */
+.carousel-arrow.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: rgba(100, 255, 218, 0.3);
+    pointer-events: none;
+}
+
+.carousel-arrow:not(.disabled):hover {
+    background: rgba(100, 255, 218, 0.1);
+    transform: translateY(-50%) scale(1.1);
+    opacity: 1;
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0 10px;
+}
+
+.carousel-dot {
+    width: 8px;
+    height: 8px;
+    border: none;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(100, 255, 218, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.carousel-dot:not(:empty) {
+    width: auto;
+    height: auto;
+    padding: 0 4px;
+    background: transparent;
+    color: var(--cyan);
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+.carousel-dot.active {
+    background: var(--cyan);
+    transform: scale(1.2);
+}
+
+/* About模块样式 */
+.about {
+    padding: 60px 0;
+    margin: 40px 0;
+}
+
+.about-container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+}
+
+.about-content {
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.about-content h3 {
+    color: var(--cyan);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.about-content p {
+    color: var(--light-gray);
+    margin-bottom: 2rem;
+    line-height: 1.8;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--cyan);
+    margin-bottom: 0.5rem;
+}
+
+.stat-text {
+    color: var(--light-gray);
+    font-size: 1rem;
+}
+
+/* 导航链接悬停效果 */
+.nav-links a:hover {
+    color: var(--cyan);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* 代理平台列表样式 */
+.supported-platforms {
+    padding: 40px 0;
+    margin: 30px 0;
+    overflow: hidden;
+}
+
+.platform-scroll {
+    display: inline-block;
+    white-space: nowrap;
+    animation: scrollPlatforms 30s linear infinite;
+    color: var(--cyan);
+    font-size: 1.2rem;
+    padding: 10px 0;
+}
+
+@keyframes scrollPlatforms {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.platform-scroll:hover {
+    animation-play-state: paused;
+}
+
+/* 英雄区域按钮链接样式 */
+.button-container a {
+    text-decoration: none;
+}
+
+.glow-button,
+.outline-button {
+    display: inline-block;
+}
+
+/* 产品卡片链接样式 */
+.product-image {
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.product-title {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.product-title:hover h3 {
+    color: var(--cyan);
+}
+
+/* 代理平台链接样式 */
+.platform-item {
+    text-decoration: none;
+    display: inline-block;
+    color: var(--cyan);
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.platform-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2);
+    background: rgba(100, 255, 218, 0.15);
+}
+
+/* 添加链接过渡效果 */
+a {
+    transition: all 0.3s ease;
+}
+
+/* 英雄区域装饰 */
+.hero-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.floating-shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: 0.3;
+}
+
+.shape1 {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(45deg, var(--purple), var(--cyan));
+    top: 15%;
+    left: 15%;
+    animation: float 15s ease-in-out infinite;
+}
+
+.shape2 {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+    bottom: 20%;
+    right: 15%;
+    animation: float 12s ease-in-out infinite reverse;
+}
+
+.shape3 {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(45deg, var(--cyan), var(--neon-blue));
+    top: 60%;
+    left: 20%;
+    animation: float 18s ease-in-out infinite 2s;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-15px, 15px) rotate(5deg); }
+    50% { transform: translate(0, 30px) rotate(0deg); }
+    75% { transform: translate(15px, 15px) rotate(-5deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* 按钮图标样式 */
+.btn-icon {
+    display: inline-block;
+    margin-right: 8px;
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.btn-text {
+    vertical-align: middle;
+} 

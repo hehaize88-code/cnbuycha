@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cnbuycha-media",
+  "main": "src/media.js",
+  "compatibility_date": "2026-08-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./legacy-assets",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  }
+}

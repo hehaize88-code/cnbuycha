@@ -1,0 +1,461 @@
+ul, li {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 公共变量 */
+:root {
+    --deep-blue: #0a192f;
+    --deep-purple: #000000;
+    --cyan: #25d366;
+    --purple: #bd93f9;
+    --pink: #ff79c6;
+    --red-light: #f15c6d;
+    --neon-blue: #53bdeb;
+    --neon-pink: #ff6ec7;
+    --white: #ffffff;
+    --light-gray: #e6e6e6;
+    --dark-gray: #333;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: rgba(0, 0, 0, 0.1);
+    --light-slate: #a8b2d1;
+    --lightest-slate: #ccd6f6;
+    --transition: all 0.3s ease;
+    --section-padding: 20px 4% 20px;
+    --container-width: 1200px;
+    --nav-height: 50px;
+    --protection-flag: "CNBuy-Protected"; /* 保护标识 */
+}
+
+/* 添加域名检测CSS钩子 */
+body:after {
+    content: "";
+    display: none;
+}
+
+
+body[data-protected]:after {
+    content: attr(data-protected);
+    position: fixed;
+    bottom: -9999px;
+    left: -9999px;
+    visibility: hidden;
+    opacity: 0;
+}
+
+/* 混淆选择器 - 看起来正常但实际无用，用来迷惑复制者 */
+._cNbUy-pRoTeCt {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* 基础重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, var(--deep-blue), var(--deep-purple)) fixed;
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+    font-size: 16px;
+    width: 100%;
+}
+
+/* 通用容器样式 */
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 15px;
+    width: 100%;
+}
+
+/* 通用section样式 */
+section {
+    padding: var(--section-padding);
+    position: relative;
+    z-index: 2;
+}
+
+/* 通用标题样式 */
+.section-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.section-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(100, 255, 218, 0.1);
+    color: var(--cyan);
+    border-radius: 15px;
+    font-size: 0.75rem;
+    margin-bottom: 10px;
+}
+
+/* 通用玻璃态卡片样式 */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* 页脚样式 */
+.glass-footer {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--glass-border);
+    padding: 25px 0;
+    text-align: center;
+    margin-top: 40px;
+}
+
+.footer-content {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.copyright-text {
+    color: var(--light-gray);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.copyright-text a {
+    color: var(--cyan);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.copyright-text a:hover {
+    color: var(--neon-blue);
+}
+
+/* 通用按钮样式 */
+.glow-button, .outline-button {
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.glow-button {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+}
+
+.outline-button {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--deep-blue);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--cyan);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-blue);
+}
+
+/* 文本选中样式 */
+::selection {
+    background: rgba(100, 255, 218, 0.2);
+    color: var(--cyan);
+}
+
+/* 分页样式 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+/* 移除列表项前的点号 */
+.pagination li {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+/* 移除列表项marker */
+.pagination li::marker {
+    display: none;
+    content: "";
+}
+
+/* 移除所有li前面的点号 - 通用选择器 */
+li::marker {
+    content: none !important;
+    display: none !important;
+}
+
+/* 强制移除所有可能的列表标记 */
+li, 
+li::before,
+li::after {
+    list-style: none !important;
+    list-style-type: none !important;
+    list-style-image: none !important;
+    list-style-position: outside !important;
+}
+
+/* 特定针对分页列表项 */
+.pagination li {
+    list-style: none !important;
+    list-style-type: none !important;
+    list-style-position: outside !important;
+}
+
+.pagination a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(8px);
+    color: var(--white);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+/* 当前页激活样式 */
+.pagination li.active a {
+    background: rgba(100, 255, 218, 0.2);
+    color: var(--cyan);
+    border-color: var(--cyan);
+}
+
+.pagination span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--white);
+    border-radius: 50%;
+    backdrop-filter: blur(8px);
+    font-size: 0.95rem;
+}
+
+.pagination a:hover {
+    background: rgba(100, 255, 218, 0.15);
+    color: var(--cyan);
+}
+
+/* 上一页下一页按钮文本隐藏，仅显示图标 */
+.pagination a[href*="pre"],
+.pagination a[href*="next"] {
+    width: 60px;
+    height: 40px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .pagination {
+        gap: 8px;
+    }
+    
+    
+    .pagination a,
+    .pagination span {
+        width: 36px;
+        height: 36px;
+        font-size: 0.85rem;
+    }
+    
+    .pagination a[href*="pre"],
+    .pagination a[href*="next"] {
+        padding: 0 12px;
+    }
+}
+
+/* 右下角悬浮按钮样式 */
+.floating-buttons {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.floating-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, var(--cyan), var(--neon-blue));
+    color: var(--deep-blue);
+    border: none;
+}
+
+.floating-btn i {
+    font-size: 1.5rem;
+}
+
+.floating-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(100, 255, 218, 0.3);
+}
+
+.floating-btn.telegram {
+    background: linear-gradient(45deg, #0088cc, #29b6f6);
+}
+
+.floating-btn.link {
+    background: linear-gradient(45deg, var(--cyan), var(--neon-blue));
+}
+
+.floating-btn-label {
+    position: absolute;
+    right: 65px;
+    background: rgba(10, 25, 47, 0.9);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--white);
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.floating-btn-wrapper:hover .floating-btn-label {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+    .floating-buttons {
+        bottom: 20px;
+        right: 20px;
+        gap: 10px;
+    }
+    
+    .floating-btn {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .floating-btn i {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-buttons {
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .floating-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .floating-btn i {
+        font-size: 1.2rem;
+    }
+    
+    .floating-btn-label {
+        display: none;
+    }
+}
+
+/* 懒加载图片样式 */
+.lazy-image,
+.lazy-bg {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    background-color: rgba(10, 25, 47, 0.5); /* 加载前的背景色 */
+}
+
+.lazy-image.lazy-loaded,
+.lazy-bg.lazy-loaded {
+    opacity: 1;
+}
+
+/* 图片预加载效果 */
+.lazy-image-placeholder {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(110deg, rgba(10, 25, 47, 0.2) 30%, rgba(20, 45, 87, 0.4) 50%, rgba(10, 25, 47, 0.2) 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* 闪烁动画效果 */
+@keyframes shimmer {
+    0% {
+        background-position: -100% 0;
+    }
+    100% {
+        background-position: 100% 0;
+    }
+}
+
+/* 图片加载后淡入动画 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 淡入动画类 */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 以下内容是页面通用样式结尾 */ 

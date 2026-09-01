@@ -1,0 +1,2 @@
+ADMIN_PASSWORD_HASH="pbkdf2_sha256$100000$SALT_HEX$HASH_HEX"
+SESSION_SECRET="replace-with-a-long-random-value"

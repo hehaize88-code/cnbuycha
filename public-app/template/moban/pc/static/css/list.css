@@ -1,0 +1,1371 @@
+@import url('common.css');
+html:has(body[data-protected]) .product-grid {
+    filter: blur(0.5px);
+    transition: all 0.3s ease;
+}
+
+html:has(body[data-protected]) .product-grid:hover {
+    filter: blur(0);
+}
+
+#particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(135deg, rgba(10, 25, 47, 0.9) 0%, rgba(0, 0, 0, 0.9) 100%);
+    opacity: 0.8;
+}
+
+/* 列表页公共样式 */
+.page-header {
+    text-align: center;
+    margin-top: 85px;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
+    padding: 0 15px;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    color: var(--white);
+    position: relative;
+    display: inline-block;
+    padding: 0 10px;
+}
+
+.page-header h1::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+
+.page-header p {
+    font-size: 0.95rem;
+    color: var(--light-gray);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.4;
+}
+
+.list-container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px 30px;
+    position: relative;
+    z-index: 2;
+}
+
+/* 筛选栏优化 */
+.filter-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 12px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); /* iOS Safari 支持 */
+    overflow: hidden; /* 防止内容溢出 */
+}
+
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.filter-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--glass-border);
+    width: 100%;
+}
+
+.filter-btn {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 8px 10px;
+    border-radius: 15px;
+    color: var(--white);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.85rem;
+    min-width: 50px;
+    text-align: center;
+    font-weight: 500;
+    /* 修复Mac和iOS上的文本显示问题 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-appearance: none;
+    width: 100%;
+}
+
+.filter-btn .btn-text {
+    /* 确保按钮文本在所有设备上可见 */
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+    color: inherit;
+}
+
+.filter-btn:hover, 
+.filter-btn.active {
+    background: rgba(100, 255, 218, 0.15);
+    color: var(--cyan);
+    border-color: var(--cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(100, 255, 218, 0.2);
+}
+
+.filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-top: 10px;
+}
+
+/* 排序按钮容器 */
+.sort-options {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+/* 排序按钮样式 */
+.sort-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--white);
+    padding: 8px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: var(--transition);
+    white-space: nowrap;
+    text-decoration: none !important;
+    font-weight: 500;
+    /* 修复Mac和iOS上的文本显示问题 */
+    -webkit-appearance: none;
+}
+
+.sort-btn .btn-text {
+    /* 确保按钮文本在所有设备上可见 */
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+    color: inherit;
+}
+
+.sort-btn i {
+    font-size: 0.85rem;
+}
+
+.sort-btn.active {
+    background: rgba(100, 255, 218, 0.15);
+    color: var(--cyan);
+    border-color: var(--cyan);
+    box-shadow: 0 3px 10px rgba(100, 255, 218, 0.15);
+}
+
+.sort-btn:hover,
+.sort-btn.active {
+    background: rgba(100, 255, 218, 0.15);
+    color: var(--cyan);
+    border-color: var(--cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(100, 255, 218, 0.2);
+}
+
+.search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    max-width: 350px;
+    margin-left: auto;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 8px 38px 8px 30px;
+    border-radius: 15px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--white);
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+
+.search-bar .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--light-gray);
+    font-size: 0.9rem;
+    pointer-events: none;
+    transition: var(--transition);
+    opacity: 0.7;
+}
+
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(45deg, var(--cyan), var(--neon-blue));
+    border: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(100, 255, 218, 0.2);
+}
+
+.search-btn i {
+    color: var(--deep-blue);
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.search-btn:hover {
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 0 12px rgba(100, 255, 218, 0.4);
+}
+
+/* 产品列表样式 */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.product-grid.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.product-image {
+    position: relative;
+    border-radius: 10px 10px 0 0;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+    overflow: hidden;
+    /* 使用宽高比技术创建正方形容器 */
+    padding-top: 100%; /* 1:1 宽高比 */
+}
+
+.product-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: all 0.3s ease;
+}
+
+.product-image:hover::after {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 121, 198, 0.9);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.product-badge.new {
+    background: rgba(189, 147, 249, 0.9);
+}
+
+.product-badge.sale {
+    background: rgba(255, 85, 85, 0.9);
+}
+
+.product-info {
+    padding: 15px;
+}
+
+.product-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--white);
+    transition: var(--transition);
+    /* 限制为单行显示，超出显示省略号 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-card:hover .product-name {
+    color: var(--cyan);
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.product-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+    position: relative;
+}
+
+/* 美元符号 */
+.product-price::before {
+    content: '$';
+    font-size: 0.9em;
+    margin-right: 2px;
+    opacity: 0.9;
+}
+
+/* 移除人民币符号 */
+.product-price[data-currency="USD"]::before {
+    content: '$';
+}
+
+.product-price .original-price {
+    text-decoration: line-through;
+    font-size: 0.85rem;
+    color: #888;
+    margin-right: 8px;
+    position: relative;
+}
+
+.product-price .original-price::before {
+    content: '$';
+    font-size: 0.9em;
+    margin-right: 2px;
+    opacity: 0.7;
+}
+
+.product-views {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--light-gray);
+    background: rgba(100, 255, 218, 0.1);
+    padding: 3px 8px;
+    border-radius: 10px;
+    transition: var(--transition);
+}
+
+.product-views i {
+    color: var(--cyan);
+    font-size: 0.85rem;
+    opacity: 0.8;
+    transition: var(--transition);
+}
+
+.product-views span {
+    font-size: 0.85rem;
+}
+
+.product-card:hover .product-views {
+    background: rgba(100, 255, 218, 0.15);
+}
+
+.product-card:hover .product-views i {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.product-rating i {
+    color: #FFD700;
+    font-size: 0.9rem;
+}
+
+.product-rating span {
+    color: var(--light-gray);
+    font-size: 0.9rem;
+}
+
+.product-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.product-actions .buy-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgba(100, 255, 218, 0.2);
+    transition: all 0.3s ease;
+}
+
+
+.buy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(100, 255, 218, 0.3);
+}
+
+.buy-btn i {
+    font-size: 0.9em;
+    transition: transform 0.3s ease;
+}
+
+.buy-btn:hover i {
+    transform: translateX(4px);
+}
+
+.wishlist-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--light-gray);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.wishlist-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+}
+
+/* 文章列表样式优化 */
+.article-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.article-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    padding: 25px;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.article-category {
+    display: inline-block;
+    background: rgba(100, 255, 218, 0.1);
+    color: var(--cyan);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.article-card:hover .article-category {
+    background: rgba(100, 255, 218, 0.2);
+}
+
+.article-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.article-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 15px 0;
+}
+
+.article-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--light-gray);
+    font-size: 0.9rem;
+}
+
+.article-meta i {
+    color: var(--cyan);
+    font-size: 0.95rem;
+    opacity: 0.8;
+}
+
+.article-title {
+    text-decoration: none;
+    transition: var(--transition);
+    display: block;
+    width: 100%;
+    overflow: hidden; /* 确保容器不会因为内容溢出而变形 */
+}
+
+.article-title h2 {
+    font-size: 1.5rem;
+    color: var(--white);
+    line-height: 1.4;
+    margin: 0;
+    transition: all 0.3s ease;
+    /* 添加文本溢出处理 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.2rem; /* 约为2行的高度 */
+}
+
+.article-card:hover .article-title h2 {
+    color: var(--cyan);
+    transform: translateX(3px); /* 轻微的位移效果 */
+}
+
+.article-excerpt {
+    color: var(--light-gray);
+    line-height: 1.6;
+    margin: 15px 0;
+    font-size: 0.95rem;
+    /* 添加文本溢出处理 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.8rem; /* 约为3行的高度 */
+}
+
+.read-more {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: rgba(100, 255, 218, 0.1);
+    color: var(--cyan);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.read-more i {
+    font-size: 0.8em;
+    transition: transform 0.3s ease;
+}
+
+.read-more:hover {
+    background: rgba(100, 255, 218, 0.15);
+    border-color: var(--cyan);
+    transform: translateX(5px);
+}
+
+.read-more:hover i {
+    transform: translateX(4px);
+}
+
+/* 响应式优化 */
+@media (max-width: 992px) {
+    .article-title h2 {
+        font-size: 1.3rem;
+        -webkit-line-clamp: 2;
+        max-height: 3.6rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .article-list {
+        padding: 0 15px;
+    }
+
+    .article-card {
+        padding: 20px;
+    }
+
+    .article-meta {
+        gap: 15px;
+    }
+
+    .article-title h2 {
+        font-size: 1.2rem;
+        -webkit-line-clamp: 2;
+        max-height: 3.4rem;
+    }
+
+    .article-excerpt {
+        font-size: 0.9rem;
+        -webkit-line-clamp: 2;
+        max-height: 3.2rem;
+    }
+
+    .filter-bar {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .filter-section {
+        gap: 8px;
+    }
+    
+    .filter-options {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        padding-bottom: 12px;
+    }
+    
+    .filter-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        min-width: 60px;
+    }
+    
+    .sort-options {
+        width: 100%;
+        justify-content: space-between;
+        gap: 6px;
+    }
+    
+    .sort-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+
+    .list-container {
+        padding: 0 15px 25px;
+    }
+    
+    .product-grid {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-header {
+        margin-top: 85px; /* 特定尺寸的顶部间距 */
+    }
+}
+
+@media (max-width: 480px) {
+    .article-card {
+        padding: 15px;
+    }
+
+    .article-category {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+
+    .article-meta {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .article-meta span {
+        font-size: 0.85rem;
+    }
+
+    .article-title h2 {
+        font-size: 1.1rem;
+        -webkit-line-clamp: 2;
+        max-height: 3.1rem;
+        word-break: break-word; /* 确保长单词能够断行 */
+    }
+    
+    .article-excerpt {
+        -webkit-line-clamp: 2;
+        max-height: 2.85rem;
+        margin: 10px 0;
+    }
+
+    .read-more {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .list-container {
+        padding: 0 10px 15px;
+    }
+    
+    .product-grid {
+        gap: 10px;
+    }
+    
+    .page-header {
+        margin-top: 65px; 
+        margin-bottom: 10px;
+    }
+    
+    .page-header h1 {
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+    }
+    
+    .page-header p {
+        font-size: 0.85rem;
+        line-height: 1.3;
+    }
+
+    .search-bar input {
+        padding: 10px 35px 10px 35px;
+        font-size: 0.85rem;
+    }
+    
+    .search-bar .search-icon {
+        left: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .search-btn {
+        width: 28px;
+        height: 28px;
+        right: 6px;
+    }
+    
+    .search-btn i {
+        font-size: 0.75rem;
+    }
+
+    .filter-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding-bottom: 12px;
+        width: 100%;
+    }
+    
+    .filter-btn {
+        padding: 8px 5px;
+        min-height: 38px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-width: unset;
+    }
+    
+    .filter-actions {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .sort-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    
+    .sort-btn {
+        padding: 8px 5px;
+        min-height: 38px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 359px) {
+    .filter-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .sort-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .sort-btn i {
+        font-size: 0.75rem;
+        margin-right: 3px;
+    }
+}
+
+/* 响应式样式 */
+@media (max-width: 992px) {
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        margin-top: 95px;
+        margin-bottom: 12px;
+    }
+    
+    .page-header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+    }
+    
+    .page-header p {
+        font-size: 0.9rem;
+    }
+    
+    .filter-bar {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .filter-section {
+        gap: 8px;
+    }
+    
+    .filter-options {
+        gap: 5px;
+        padding-bottom: 8px;
+    }
+    
+    .filter-actions {
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 8px;
+    }
+    
+    .sort-options {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .search-bar {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+    }
+    
+    .sort-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .sort-btn i {
+        font-size: 0.75rem;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .article-card {
+        flex-direction: column;
+    }
+    
+    .article-image {
+        width: 100%;
+        height: 180px;
+    }
+    
+    .search-bar input {
+        padding: 10px 45px 10px 40px;
+    }
+    
+    .search-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .search-bar .search-icon {
+        left: 15px;
+        font-size: 1rem;
+    }
+    
+    .buy-btn {
+        padding: 10px 20px;
+        font-size: 0.95em;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-header {
+        margin-top: 95px; /* 特定尺寸的顶部间距 */
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header {
+        margin-top: 65px; 
+        margin-bottom: 10px;
+    }
+    
+    .page-header h1 {
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+    }
+    
+    .page-header p {
+        font-size: 0.85rem;
+        line-height: 1.3;
+    }
+    
+    .product-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .pagination {
+        gap: 5px;
+    }
+    
+    .page-item {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .sort-btn {
+        font-size: 0.85rem;
+        padding: 8px;
+    }
+    
+    .sort-btn i {
+        font-size: 0.85rem;
+    }
+    
+    .buy-btn {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+    
+    .list-container {
+        padding: 0 10px 15px;
+    }
+}
+
+@media (max-width: 380px) {
+    .page-header {
+        margin-top: 60px;
+    }
+    
+    .page-header h1 {
+        font-size: 1.3rem;
+    }
+}
+
+/* 相关搜索部分样式 */
+.related-searches {
+    padding: 20px 4%;
+    margin-bottom: 30px;
+}
+
+.related-searches h3 {
+    font-size: 1.2rem;
+    color: var(--lightest-slate);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.related-search-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-tag {
+    display: inline-block;
+    padding: 8px 15px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    color: var(--light-gray);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.search-tag:hover {
+    background: rgba(100, 255, 218, 0.1);
+    color: var(--cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .related-searches {
+        padding: 15px 4%;
+    }
+    
+    .related-search-tags {
+        gap: 8px;
+    }
+    
+    .search-tag {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .related-search-tags {
+        justify-content: center;
+    }
+    
+    .search-tag {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+/* 添加大屏和超大屏的媒体查询 */
+@media (min-width: 1200px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+}
+
+@media (min-width: 1400px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+@media (min-width: 1600px) {
+    .product-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (min-width: 1800px) {
+    .product-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+/* 针对平台页特别处理 */
+.platform-page .page-header h1 {
+    border: 1px solid var(--cyan);
+    border-radius: 8px;
+    padding: 5px 15px;
+    background: rgba(100, 255, 218, 0.05);
+}
+
+@media (max-width: 480px) {
+    .platform-page .page-header h1 {
+        padding: 3px 10px;
+        border-width: 1px;
+    }
+}
+
+/* 分页样式 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pagination a, .pagination span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 20px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--white);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.pagination a:hover {
+    background: rgba(100, 255, 218, 0.08);
+    transform: translateY(-2px);
+    color: var(--cyan);
+    border-color: var(--cyan);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.pagination span.active, .pagination a.active, .pagination span.current, .pagination a.current {
+    background: rgba(100, 255, 218, 0.15);
+    border-color: var(--cyan);
+    color: var(--cyan);
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2);
+}
+
+.pagination a.pagepre i, .pagination a.pagenxt i {
+    font-size: 0.8rem;
+    margin: 0 1px;
+}
+
+/* 小屏幕下的分页优化 */
+@media (max-width: 480px) {
+    .pagination {
+        gap: 8px;
+        margin-top: 25px;
+    }
+    
+    .pagination a, .pagination span {
+        min-width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+        padding: 0 10px;
+    }
+    
+    .pagination a.pagepre, .pagination a.pagenxt {
+        min-width: 80px;
+    }
+}
+
+@media (max-width: 359px) {
+    .pagination a, .pagination span {
+        min-width: 34px;
+        height: 34px;
+        font-size: 0.85rem;
+        padding: 0 8px;
+    }
+    
+    .pagination a.pagepre, .pagination a.pagenxt {
+        min-width: 70px;
+    }
+}
+
+/* 优化上一页和下一页按钮 */
+.pagination a.pagepre, .pagination a.pagenxt {
+    min-width: 80px;
+    background: rgba(100, 255, 218, 0.05);
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    gap: 5px;
+    font-weight: 500;
+}
+
+.pagination a.pagepre:hover, .pagination a.pagenxt:hover {
+    background: rgba(100, 255, 218, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.15);
+}
+
+.pagination a.pagepre::before {
+    content: "\f053";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 0.8rem;
+    margin-right: 5px;
+    opacity: 0.8;
+}
+
+.pagination a.pagenxt::after {
+    content: "\f054";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 0.8rem;
+    margin-left: 5px;
+    opacity: 0.8;
+}
+
+.pagination a.pagepre:hover::before, .pagination a.pagenxt:hover::after {
+    opacity: 1;
+}
+
+/* Safari/iOS专用样式修复 */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    /* Safari和iOS特定样式 */
+    .filter-btn {
+        background-color: var(--glass-bg) !important;
+        border: 1px solid var(--glass-border) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        opacity: 1 !important;
+        overflow: visible !important;
+        flex: 0 0 auto !important;
+        width: 100% !important;
+    }
+    
+    /* 使用网格布局确保水平排列 */
+    .filter-options {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        padding-bottom: 10px !important;
+        flex-direction: unset !important;
+    }
+    
+    /* 设置容器样式 */
+    .filter-bar {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .filter-section {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    .filter-btn.active {
+        background-color: rgba(100, 255, 218, 0.15) !important;
+        color: var(--cyan) !important;
+        border-color: var(--cyan) !important;
+    }
+    
+    .filter-btn .btn-text {
+        display: inline-block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        position: relative !important;
+    }
+    
+    .sort-btn {
+        display: flex !important;
+        align-items: center !important;
+        opacity: 1 !important;
+    }
+    
+    .sort-btn .btn-text {
+        display: inline-block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+}
+
+/* 专为Mac和iOS添加额外的兼容性代码 */
+@supports (-webkit-touch-callout: none) {
+    /* iOS设备特定样式 */
+    .filter-btn, .sort-btn {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        display: flex !important;
+        min-width: unset !important;
+        padding: 8px 10px !important;
+        width: 100% !important;
+    }
+    
+    .filter-options {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        padding-bottom: 10px !important;
+        flex-direction: unset !important;
+    }
+    
+    /* 让按钮在一行显示 */
+    .filter-bar {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .filter-section {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    /* 针对移动设备的网格布局尺寸调整 */
+    @media (max-width: 480px) {
+        .filter-options {
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)) !important;
+        }
+    }
+    
+    /* 强制重绘按钮文本 */
+    .btn-text {
+        position: relative;
+        will-change: transform;
+        transform: translateZ(0);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        display: inline !important;
+        white-space: nowrap !important;
+    }
+} 

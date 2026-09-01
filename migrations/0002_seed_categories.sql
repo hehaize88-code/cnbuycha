@@ -1,0 +1,16 @@
+INSERT OR REPLACE INTO categories (id,name,slug,parent_id,legacy_path,seo_title,seo_description,sort_order,enabled) VALUES
+(1,'All Products','allproducts',0,'/AllProducts','','',100,1),
+(2,'Agents','agents',0,'/Agents','','',100,1),
+(3,'Shopping Website','shopping-website',0,'/shopping-website','','',100,1),
+(4,'Shoes','shoes',1,'/AllProducts/shoes','','',100,1),
+(5,'Sweatshirts','hoodies-sweaters',1,'/AllProducts/hoodies-sweaters','','',100,1),
+(6,'T-Shirts','t-shirts',1,'/AllProducts/t-shirts','','',100,1),
+(7,'Jackets','jackets',1,'/AllProducts/jackets','','',100,1),
+(8,'Pants/Shorts','pants-shorts',1,'/AllProducts/pants-shorts','','',100,1),
+(9,'Headwear','headwear',1,'/AllProducts/headwear','','',100,1),
+(10,'Accessories','accessories',1,'/AllProducts/accessories','','',100,1),
+(11,'Short Sets','short-sets',1,'/AllProducts/short-sets','','',100,1),
+(12,'Electronics','electronics',1,'/AllProducts/electronics','','',100,1),
+(13,'Other Stuff','other-stuff',1,'/AllProducts/other-stuff','','',100,1),
+(14,'CnFans','cnfans',2,'/Agents/cnfans','','',100,1),
+(15,'Jersey','jersey',1,'/AllProducts/jersey','','',100,1);

@@ -1,0 +1,557 @@
+@import url('common.css');
+html:has(body[data-protected]) .glass-nav {
+    animation: _random_glitch 0.5s infinite alternate;
+}
+
+@keyframes _random_glitch {
+    0% { opacity: 1; }
+    25% { opacity: 0.95; }
+    50% { opacity: 0.9; }
+    75% { opacity: 0.95; }
+    100% { opacity: 1; }
+}
+
+/* 导航栏基础样式 */
+.glass-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.8rem 4%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 55px;
+}
+
+/* Logo样式 */
+.logo-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    z-index: 1001;
+}
+
+.logo {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--white);
+    z-index: 1001;
+}
+
+.logo .highlight {
+    color: var(--cyan);
+}
+
+/* 导航链接样式 */
+.nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    height: 100%;
+}
+
+/* 处理nav-links-inner容器，在大屏下不影响布局 */
+.nav-links-inner {
+    display: contents; /* 在大屏下内容会直接放置在父容器中 */
+}
+
+.nav-links li {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.nav-links a {
+    color: var(--light-gray);
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: var(--transition);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    -webkit-tap-highlight-color: rgba(100, 255, 218, 0.2);
+    touch-action: manipulation;
+    user-select: none;
+    padding: 0.5rem 0.8rem;
+    height: 100%;
+}
+
+.nav-links a .link-text {
+    pointer-events: none;
+    display: inline-block;
+}
+
+.nav-links a:hover,
+.nav-links a:active,
+.nav-links a:focus {
+    color: var(--cyan);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* 登录按钮基础样式 */
+.login-button,
+.login-item a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    border: 1px solid var(--cyan);
+    border-radius: 30px;
+    background: rgba(100, 255, 218, 0.08);
+    color: var(--cyan);
+    transition: var(--transition);
+    text-decoration: none;
+    gap: 8px;
+    height: 40px;
+    box-sizing: border-box;
+}
+
+/* 简化的图标和文本样式 */
+.login-icon,
+.login-button i,
+.login-item a i,
+.login-button .link-text,
+.login-item a .link-text {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+.login-icon {
+    width: 22px;
+    height: 22px;
+}
+
+/* 登录按钮图标 */
+.login-button i,
+.login-item a i {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+/* 登录按钮文字 */
+.login-button .link-text,
+.login-item a .link-text {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+/* 菜单按钮样式 */
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+    z-index: 1001;
+    font-size: 1.5rem;
+    color: var(--cyan);
+    transition: var(--transition);
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    outline: none;
+}
+
+.menu-toggle:hover {
+    color: var(--neon-blue);
+}
+
+.menu-toggle i {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* 菜单打开时的图标转换为X */
+.menu-toggle.active i {
+    transform: rotate(0deg);
+}
+
+.menu-toggle.active i:before {
+    content: "\f00d"; /* FontAwesome的X图标 */
+}
+
+/* 导航栏滚动效果 */
+.glass-nav.scrolled {
+    background: rgba(10, 25, 47, 0.95);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    padding: 0.8rem 4%;
+}
+
+.glass-nav.scrolled .logo {
+    font-size: 1.6rem;
+}
+
+.glass-nav.scrolled .nav-links a {
+    font-size: 1.1rem;
+}
+
+/* 响应式导航样式 */
+@media (max-width: 1024px) {
+    .nav-links {
+        gap: 1.5rem;
+    }
+    
+    .nav-links a {
+        padding: 0.5rem 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-nav {
+        padding: 0.6rem 4%;
+        min-height: 50px;
+    }
+    
+    .logo {
+        font-size: 1.4rem;
+    }
+    
+    .menu-toggle {
+        display: block;
+        position: relative;
+        font-size: 1.5rem;
+        padding: 0.5rem;
+    }
+    
+    /* 当菜单激活时改变菜单图标 */
+    .menu-toggle.active {
+        position: fixed;
+        top: 0.6rem;
+        right: 4%;
+        color: var(--white);
+    }
+    
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 85%;
+        height: 100vh;
+        background: rgba(10, 25, 47, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: right 0.3s ease;
+        z-index: 999;
+        padding: 0;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+        gap: 15px;
+        overflow-y: auto;
+    }
+    
+    /* 添加顶部导航标题 */
+    .nav-links:before {
+        content: "MENU";
+        display: block;
+        width: 100%;
+        text-align: center;
+        font-size: 1.3rem;
+        color: var(--cyan);
+        font-weight: bold;
+        margin: 0;
+        letter-spacing: 2px;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        z-index: 1010;
+    }
+    
+    /* 菜单内容容器 */
+    .nav-links-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0 20px;
+        box-sizing: border-box;
+        margin-top: 100px;
+    }
+    
+    .nav-links.active {
+        right: 0;
+    }
+    
+    .nav-links.closing {
+        right: -100%;
+    }
+    
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+        margin: 5px 0;
+        height: auto;
+    }
+    
+    .nav-links a {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 15px;
+        color: var(--light-gray);
+        font-size: 1.7rem;
+        cursor: pointer;
+        height: auto;
+        font-weight: 500;
+    }
+    
+    .nav-links a .link-text {
+        text-align: center;
+        display: block;
+        width: 100%;
+    }
+    
+    .nav-links a:hover,
+    .nav-links a:active,
+    .nav-links a:focus {
+        background: rgba(100, 255, 218, 0.1);
+        color: var(--cyan);
+    }
+
+    /* 移动端登录按钮容器 */
+    .login-item {
+        width: 100%;
+        margin: 20px 0 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    /* 移动端登录按钮样式 */
+    .login-button,
+    .login-item a {
+        margin: 0 auto;
+        width: 65%;
+        max-width: 220px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 1px solid var(--cyan);
+        border-radius: 25px;
+        background: rgba(100, 255, 218, 0.1);
+        color: var(--cyan) !important;
+        font-size: 1.6rem;
+        font-weight: 500;
+        visibility: visible !important;
+        opacity: 1 !important;
+        text-decoration: none;
+        position: relative;
+        z-index: 10;
+        gap: 10px;
+        box-shadow: 0 3px 10px rgba(100, 255, 218, 0.15);
+        box-sizing: border-box;
+    }
+    
+    /* 移动端图标容器尺寸 */
+    .login-icon {
+        width: 22px;
+        height: 22px;
+    }
+    
+    /* 移动端图标尺寸 */
+    .login-button i,
+    .login-item a i {
+        font-size: 1.4rem;
+    }
+    
+    /* 登录按钮hover效果 */
+    .login-button:hover,
+    .login-button:active,
+    .login-button:focus,
+    .login-item a:hover,
+    .login-item a:active,
+    .login-item a:focus {
+        background: rgba(100, 255, 218, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2);
+    }
+    
+    /* 移动端特殊样式 */
+    .mobile-nav-header {
+        width: 100%;
+        text-align: center;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+        margin-bottom: 10px;
+        position: relative;
+    }
+}
+
+@media (max-width: 480px) {
+    .glass-nav {
+        padding: 0.5rem 3%;
+        min-height: 45px;
+    }
+    
+    /* 确保移动端小屏幕上菜单链接正确显示 */
+    .nav-links a {
+        font-size: 1.4rem;
+        padding: 8px 15px;
+    }
+    
+    /* 小屏幕登录按钮样式 */
+    .login-button,
+    .login-item a {
+        width: 50%;
+        max-width: 160px;
+        height: 38px;
+        font-size: 1.3rem;
+        padding: 0;
+        gap: 6px;
+    }
+    
+    .login-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .login-button i, 
+    .login-item a i {
+        font-size: 1.2rem;
+    }
+    
+    /* 移动端菜单项间隔 */
+    .nav-links li {
+        margin: 4px 0;
+    }
+    
+    /* 顶部导航标题 */
+    .nav-links:before {
+        margin: 0 0 10px;
+        top: 30px;
+        font-size: 1.2rem;
+    }
+    
+    .nav-links {
+        padding: 0;
+    }
+}
+
+/* 超小屏幕导航适配 */
+@media (max-width: 359px) {
+    .glass-nav {
+        padding: 0.4rem 3%;
+        min-height: 40px;
+    }
+    
+    .logo {
+        font-size: 1.2rem;
+    }
+    
+    .menu-toggle {
+        font-size: 1.6rem;
+        padding: 0.5rem;
+    }
+    
+    .nav-links {
+        width: 90%;
+        padding: 0;
+    }
+    
+    .nav-links:before {
+        font-size: 1.1rem;
+        margin: 0 0 10px;
+        top: 25px;
+    }
+    
+    .nav-links a {
+        font-size: 1.4rem;
+        padding: 10px 15px;
+    }
+    
+    /* 超小屏幕登录按钮样式 */
+    .login-button,
+    .login-item a {
+        width: 60%;
+        max-width: 140px;
+        height: 36px;
+        font-size: 1.2rem;
+        padding: 0;
+        margin: 0 auto;
+        gap: 5px;
+    }
+    
+    .login-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .login-button i, 
+    .login-item a i {
+        font-size: 1.1rem;
+    }
+    
+    .login-button .link-text,
+    .login-item a .link-text {
+        font-size: 1.3rem;
+    }
+}
+
+/* 大屏幕特别样式 */
+@media (min-width: 1200px) {
+    .glass-nav {
+        padding: 0.8rem 5%;
+    }
+    
+    .nav-links {
+        gap: 3rem;
+    }
+    
+    .nav-links a {
+        font-size: 1.25rem;
+    }
+    
+    .login-button,
+    .login-item a {
+        padding: 10px 22px;
+        font-size: 1.25rem;
+    }
+}
+
+/* 增加特定的大屏样式 */
+@media (min-width: 769px) {
+    .nav-links li.login-item {
+        margin-left: 1rem;
+    }
+    
+    .login-button,
+    .login-item a {
+        box-shadow: 0 2px 10px rgba(100, 255, 218, 0.1); /* 添加默认阴影 */
+    }
+}
+
+/* 登录按钮样式 */
+.login-item {
+    margin: 0 0 0 1rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.login-button:hover,
+.login-item a:hover {
+    background: rgba(100, 255, 218, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+} 
