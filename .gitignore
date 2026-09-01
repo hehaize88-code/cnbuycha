@@ -4,4 +4,6 @@ node_modules/
 dist/
 legacy-assets/uploads/
 legacy-assets/public/upload/
+legacy-assets-a/
+legacy-assets-b/
 *.log

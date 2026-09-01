@@ -13,14 +13,18 @@
     {
       "binding": "DB",
       "database_name": "cnbuycha",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "46454e2d-4039-4a34-81b6-d9e2fa877287",
       "migrations_dir": "migrations"
     }
   ],
   "services": [
     {
-      "binding": "MEDIA",
-      "service": "cnbuycha-media"
+      "binding": "MEDIA_A",
+      "service": "cnbuycha-media-a"
+    },
+    {
+      "binding": "MEDIA_B",
+      "service": "cnbuycha-media-b"
     }
   ],
   "vars": {

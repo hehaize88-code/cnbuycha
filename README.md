@@ -16,7 +16,7 @@
 ## 不使用 R2 的存储结构
 
 - `cnbuycha`：主 Worker、前后台和 D1 数据库
-- `cnbuycha-media`：12,960 个旧图片静态资源（约 1.7GB）
+- `cnbuycha-media-a`、`cnbuycha-media-b`：分片承载 12,960 个旧图片静态资源（约 1.7GB）
 - 新上传图片：直接存入 D1 的 `uploaded_files` 表，单张限制 1.5MB
 - GitHub：只保存程序与数据迁移文件，不保存 1.7GB 旧图片
 
@@ -34,7 +34,7 @@ npm run db:local
 ## Cloudflare 部署顺序
 
 1. 登录 Wrangler：`npx wrangler login`
-2. 部署旧图片 Worker：`npx wrangler deploy --config wrangler.media.jsonc`
+2. 部署旧图片 Worker：`npx wrangler deploy --config wrangler.media.jsonc` 和 `npx wrangler deploy --config wrangler.media-b.jsonc`
 3. 创建 D1，并把返回的数据库 ID 写入 `wrangler.jsonc`：`npx wrangler d1 create cnbuycha`
 4. 导入数据：`npx wrangler d1 migrations apply cnbuycha --remote`
 5. 生成后台密码哈希与会话密钥：`node tools/generate-secrets.mjs '你的新密码'`

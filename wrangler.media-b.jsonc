@@ -1,11 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "cnbuycha-media-a",
+  "name": "cnbuycha-media-b",
   "main": "src/media.js",
   "compatibility_date": "2026-08-01",
   "workers_dev": true,
   "assets": {
-    "directory": "./legacy-assets-a",
+    "directory": "./legacy-assets-b",
     "binding": "ASSETS",
     "run_worker_first": true
   }

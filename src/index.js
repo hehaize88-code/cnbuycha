@@ -111,6 +111,13 @@ async function serveStoredImage(env, path) {
 }
 
 async function serveLegacyImage(request, env) {
+  const pathname = new URL(request.url).pathname;
+  let hash = 2166136261;
+  for (let index = 0; index < pathname.length; index += 1) {
+    hash = Math.imul(hash ^ pathname.charCodeAt(index), 16777619);
+  }
+  const media = (hash >>> 0) % 2 === 0 ? env.MEDIA_A : env.MEDIA_B;
+  if (media?.fetch) return media.fetch(request);
   if (env.MEDIA?.fetch) return env.MEDIA.fetch(request);
   if (env.LEGACY_MEDIA_ORIGIN) {
     const incoming = new URL(request.url);
