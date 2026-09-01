@@ -34,6 +34,7 @@ const DEFAULT_SETTINGS = {
   brand_first: "Cnbuy",
   brand_second: "Sheet",
   contact_url: "#",
+  cny_per_usd: "7.20",
 };
 
 const securityHeaders = {
@@ -240,6 +241,19 @@ async function deleteProductRequest(request, env, session, id) {
   return redirect("/yc.php?deleted=1");
 }
 
+async function saveCurrencyRate(request, env, session) {
+  const form = await request.formData();
+  if (!csrfValid(form, session)) return new Response("Invalid CSRF token", { status: 403 });
+  const rate = Number.parseFloat(String(form.get("cny_per_usd") || ""));
+  if (!Number.isFinite(rate) || rate < 1 || rate > 20) {
+    return redirect("/yc.php?rate_error=1");
+  }
+  await env.DB.prepare(
+    "INSERT INTO settings(key, value) VALUES ('cny_per_usd', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+  ).bind(rate.toFixed(2)).run();
+  return redirect("/yc.php?rate_saved=1");
+}
+
 async function adminRoute(request, env, url) {
   if (request.method === "POST" && url.pathname === "/yc.php/login") return login(request, env);
   const session = await currentSession(request, env);
@@ -250,6 +264,7 @@ async function adminRoute(request, env, url) {
     return redirect("/yc.php", { "Set-Cookie": clearSessionCookie() });
   }
   if (request.method === "POST" && url.pathname === "/yc.php/products/save") return saveProductRequest(request, env, session);
+  if (request.method === "POST" && url.pathname === "/yc.php/settings/currency") return saveCurrencyRate(request, env, session);
   const deleteMatch = url.pathname.match(/^\/yc\.php\/products\/(\d+)\/delete$/);
   if (request.method === "POST" && deleteMatch) return deleteProductRequest(request, env, session, Number(deleteMatch[1]));
   const categories = await getCategories(env.DB, true);
@@ -265,9 +280,24 @@ async function adminRoute(request, env, url) {
   if (request.method === "GET" && url.pathname === "/yc.php") {
     const page = integer(url.searchParams.get("page"), 1, 1, 100000);
     const query = String(url.searchParams.get("q") || "").trim().slice(0, 100);
-    const result = await listProducts(env.DB, { query, page, pageSize: 60, includeHidden: true });
-    const notice = url.searchParams.has("saved") ? "产品已保存。" : url.searchParams.has("deleted") ? "产品已删除。" : "";
-    return adminHtml(renderAdminProducts({ session, products: result.products, total: result.total, page, query, notice }));
+    const [result, settings] = await Promise.all([
+      listProducts(env.DB, { query, page, pageSize: 60, includeHidden: true }),
+      getSettings(env.DB),
+    ]);
+    const notice = url.searchParams.has("saved") ? "产品已保存。"
+      : url.searchParams.has("deleted") ? "产品已删除。"
+        : url.searchParams.has("rate_saved") ? "美元换算汇率已保存。"
+          : url.searchParams.has("rate_error") ? "汇率无效，请填写 1 到 20 之间的数字。"
+            : "";
+    return adminHtml(renderAdminProducts({
+      session,
+      products: result.products,
+      total: result.total,
+      page,
+      query,
+      cnyPerUsd: settings.cny_per_usd || DEFAULT_SETTINGS.cny_per_usd,
+      notice,
+    }));
   }
   return adminHtml(renderErrorPage(404, "Page not found", DEFAULT_SETTINGS), 404);
 }

@@ -77,12 +77,17 @@ test("restored storefront and admin product workflow", async () => {
   let body = await response.text();
   assert.match(body, /Latest Products/);
   assert.match(body, /Cnbuy/);
+  const latest = database.prepare("SELECT main_image, price FROM products WHERE status = 1 ORDER BY created_at DESC, id DESC LIMIT 1").get();
+  assert.ok(body.includes(`src="${latest.main_image}"`));
+  assert.ok(body.includes(`>${(Number(latest.price) / 7.2).toFixed(2)}<`));
+  assert.doesNotMatch(body, /data-src=/);
 
-  const sample = database.prepare("SELECT p.id, c.slug FROM products p JOIN categories c ON c.id = p.category_id WHERE p.status = 1 ORDER BY p.id DESC LIMIT 1").get();
+  const sample = database.prepare("SELECT p.id, p.price, p.main_image, c.slug FROM products p JOIN categories c ON c.id = p.category_id WHERE p.status = 1 ORDER BY p.id DESC LIMIT 1").get();
   response = await worker.fetch(new Request(`https://www.cnbuycha.com/${sample.slug}/${sample.id}.html`), env, ctx);
   assert.equal(response.status, 200);
   body = await response.text();
   assert.match(body, /Select Purchase Platform/);
+  assert.ok(body.includes(`>${(Number(sample.price) / 7.2).toFixed(2)}<`));
   await Promise.all(pending);
 
   response = await worker.fetch(new Request("https://www.cnbuycha.com/yc.php"), env, ctx);
@@ -97,8 +102,17 @@ test("restored storefront and admin product workflow", async () => {
   response = await worker.fetch(new Request("https://www.cnbuycha.com/yc.php/products/new", { headers: { Cookie: cookie } }), env, ctx);
   body = await response.text();
   assert.equal(response.status, 200);
+  assert.match(body, /价格（人民币 ¥）/);
   const csrf = body.match(/name="csrf" value="([^"]+)"/)?.[1];
   assert.ok(csrf);
+
+  response = await worker.fetch(new Request("https://www.cnbuycha.com/yc.php/settings/currency", {
+    method: "POST",
+    headers: { Cookie: cookie },
+    body: new URLSearchParams({ csrf, cny_per_usd: "7.00" }),
+  }), env, ctx);
+  assert.equal(response.status, 303);
+  assert.equal(database.prepare("SELECT value FROM settings WHERE key = 'cny_per_usd'").get().value, "7.00");
 
   const form = new FormData();
   form.set("csrf", csrf);

@@ -1,4 +1,11 @@
 const PLACEHOLDER = "/placeholder.svg";
+const DEFAULT_CNY_PER_USD = 7.2;
+
+export function formatUsdFromCny(value, settings = {}) {
+  const configuredRate = Number.parseFloat(String(settings.cny_per_usd || ""));
+  const rate = Number.isFinite(configuredRate) && configuredRate > 0 ? configuredRate : DEFAULT_CNY_PER_USD;
+  return (Math.max(0, Number(value) || 0) / rate).toFixed(2);
+}
 
 export function escapeHtml(value) {
   return String(value ?? "")
@@ -103,15 +110,15 @@ const categoryIcons = {
   "short-sets": "fa-layer-group",
 };
 
-function productCard(product, className = "product-card glass-card") {
+function productCard(product, settings, className = "product-card glass-card") {
   const url = productUrl(product);
   const image = safeUrl(product.main_image, PLACEHOLDER);
   return `<article class="${className}">
-    <a href="${url}" class="product-image"><img class="lazy-image" src="${PLACEHOLDER}" data-src="${escapeHtml(image)}" alt="${escapeHtml(product.title)}" loading="lazy"></a>
+    <a href="${url}" class="product-image"><img src="${escapeHtml(image)}" alt="${escapeHtml(product.title)}" width="600" height="600" loading="lazy" decoding="async"></a>
     <div class="product-info">
       <a href="${url}" class="product-title"><h3>${escapeHtml(product.title)}</h3></a>
       <div class="product-meta">
-        <div class="product-price">${Number(product.price || 0).toFixed(2)}</div>
+        <div class="product-price" data-currency="USD" title="Converted from CNY">${formatUsdFromCny(product.price, settings)}</div>
         <div class="product-views"><i class="fas fa-eye"></i><span>${Number(product.views || 0)}</span></div>
       </div>
       <a href="${url}" class="add-to-cart-btn">Check the details</a>
@@ -143,7 +150,7 @@ export function renderHome({ settings, categories, products, origin }) {
   <section id="categories" class="categories"><div class="container"><div class="category-grid">${categoryCards}</div></div></section>
   <section id="featured-products" class="featured-products"><div class="container">
     <div class="section-header"><span class="section-tag">Latest</span><h2>Latest Products</h2><p>Latest collection of products</p></div>
-    <div class="product-carousel-container"><button class="carousel-arrow carousel-prev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button><div class="products-carousel"><div class="carousel-track">${products.map((product) => productCard(product)).join("")}</div></div><button class="carousel-arrow carousel-next" aria-label="Next"><i class="fas fa-chevron-right"></i></button></div>
+    <div class="product-carousel-container"><button class="carousel-arrow carousel-prev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button><div class="products-carousel"><div class="carousel-track">${products.map((product) => productCard(product, settings)).join("")}</div></div><button class="carousel-arrow carousel-next" aria-label="Next"><i class="fas fa-chevron-right"></i></button></div>
     <div class="view-all-container"><a href="/AllProducts/" class="view-all-btn">View All Products <i class="fas fa-arrow-right"></i></a></div>
   </div></section>
   <section id="tutorial" class="tutorial-module"><div class="container"><div class="section-header"><span class="section-tag">Auto Purchase Tool</span><h2>How to bypass “Non-purchasable item” warnings automatically</h2></div><div class="glass-tutorial-container"><div class="tutorial-buttons"><a href="/video" class="tutorial-btn primary-btn"><span class="btn-icon"><i class="fas fa-play-circle"></i></span><span class="btn-text">Watch Tutorial</span></a><a href="https://chromewebstore.google.com/detail/risk-reminder-remover/afgegfoedkeffjkkkjkbpnegceleakeo" class="tutorial-btn secondary-btn" rel="noopener noreferrer"><span class="btn-icon"><i class="fab fa-chrome"></i></span><span class="btn-text">Download Extension</span></a></div></div></div></section>
@@ -189,7 +196,7 @@ export function renderProductList({ settings, categories, currentCategory, produ
   <section class="list-container">
     <div class="filter-bar"><div class="filter-section"><div class="filter-options">${categoryButtons}</div><div class="filter-actions"><div class="sort-options">${sortLink("new", "fa-clock", "Latest")}${sortLink("click", "fa-fire", "Popular")}${sortLink("price", "fa-sort-amount-up", "Price")}</div><form class="search-bar" action="/AllProducts/" method="get"><i class="fas fa-search search-icon"></i><input type="search" name="q" value="${escapeHtml(query)}" placeholder="Search products…"><button type="submit" class="search-btn"><i class="fas fa-arrow-right"></i></button></form></div></div></div>
     <div class="results-summary">${Number(total).toLocaleString("en-US")} products</div>
-    <div class="product-grid">${products.length ? products.map((product) => productCard(product)).join("") : `<div class="empty-state"><h2>No products found</h2><p>Try another search or category.</p></div>`}</div>
+    <div class="product-grid">${products.length ? products.map((product) => productCard(product, settings)).join("") : `<div class="empty-state"><h2>No products found</h2><p>Try another search or category.</p></div>`}</div>
     ${pagination({ page, pages, baseUrl, query, sort })}
   </section>
 </main>${footer(settings)}`;
@@ -225,13 +232,13 @@ export function renderProductDetail({ settings, product, related, origin }) {
   <div class="breadcrumb"><a href="/">Home</a> / <a href="/${escapeHtml(product.category_slug)}/">${escapeHtml(product.category_name)}</a> / <span>${escapeHtml(product.title)}</span></div>
   <section class="product-detail">
     <div class="product-gallery"><div class="main-image"><img id="mainProductImage" src="${escapeHtml(safeUrl(gallery[0], PLACEHOLDER))}" alt="${escapeHtml(product.title)}"></div><div class="thumbnail-container">${gallery.map((image, index) => `<button class="thumbnail${index === 0 ? " active" : ""}" type="button" data-gallery-src="${escapeHtml(safeUrl(image, PLACEHOLDER))}"><img src="${escapeHtml(safeUrl(image, PLACEHOLDER))}" alt="${escapeHtml(product.title)} ${index + 1}" loading="lazy"></button>`).join("")}</div></div>
-    <div class="product-info"><h1 class="product-title">${escapeHtml(product.title)}</h1><div class="product-id">ID: ${escapeHtml(product.source_id)}</div><div class="product-meta"><div class="product-price">${Number(product.price || 0).toFixed(2)}</div><div class="product-views"><i class="fas fa-eye"></i><span>${Number(product.views || 0)}</span></div></div>
+    <div class="product-info"><h1 class="product-title">${escapeHtml(product.title)}</h1><div class="product-id">ID: ${escapeHtml(product.source_id)}</div><div class="product-meta"><div class="product-price" data-currency="USD" title="Converted from CNY">${formatUsdFromCny(product.price, settings)}</div><div class="product-views"><i class="fas fa-eye"></i><span>${Number(product.views || 0)}</span></div></div>
       <div class="product-actions"><button class="action-btn buy-now-btn" type="button" data-open-platforms><i class="fas fa-shopping-cart"></i> Buy Link</button><a href="${escapeHtml(sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer" class="action-btn weidian-btn"><i class="fas fa-store"></i> Weidian Link</a><div class="actions-row"><button class="action-btn copy-link-btn" type="button" data-copy-url="${escapeHtml(canonical)}"><i class="fas fa-share-alt"></i> Share</button></div></div>
       <div class="product-info-section"><div class="product-description">How to bypass “Non-purchasable item” warnings automatically!</div><a href="/video" class="action-btn how-to-buy-btn"><i class="fas fa-question-circle"></i> Tutorial</a></div>
     </div>
   </section>
   ${product.description ? `<section class="product-copy glass-card"><h2>Product information</h2><p>${escapeHtml(product.description).replaceAll("\n", "<br>")}</p></section>` : ""}
-  <section class="product-list"><h2 class="section-title">Related Products</h2><div class="product-grid">${related.map((item) => productCard(item)).join("")}</div></section>
+  <section class="product-list"><h2 class="section-title">Related Products</h2><div class="product-grid">${related.map((item) => productCard(item, settings)).join("")}</div></section>
 </main>
 <div class="platform-modal" id="platformModal" hidden><div class="platform-modal-content"><button class="close-modal" type="button" data-close-modal>&times;</button><h3>Select Purchase Platform</h3><p class="modal-note">Choose an agent to open its purchase page.</p><div class="platform-list">${platforms.map(([name, image, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="nofollow noopener noreferrer" class="platform-option"><img src="${image}" alt=""><span>${name}</span></a>`).join("")}</div></div></div>
 <div class="copy-success" id="copySuccess"><i class="fas fa-check-circle"></i> Link copied</div>
@@ -250,9 +257,9 @@ export function renderLogin({ error = "", configured = true } = {}) {
   return adminLayout("登录", content, { error });
 }
 
-export function renderAdminProducts({ session, products, total, page, query, notice = "" }) {
-  const rows = products.map((product) => `<tr><td><img class="admin-thumb" src="${escapeHtml(safeUrl(product.main_image, PLACEHOLDER))}" alt=""></td><td><strong>${escapeHtml(product.title)}</strong><small>ID ${Number(product.id)} · ${escapeHtml(product.source_id)}</small></td><td>${escapeHtml(product.category_name || "")}</td><td>${Number(product.price || 0).toFixed(2)}</td><td><span class="status ${product.status ? "live" : "hidden"}">${product.status ? "显示" : "隐藏"}</span></td><td class="row-actions"><a href="/yc.php/products/${Number(product.id)}/edit">编辑</a><form method="post" action="/yc.php/products/${Number(product.id)}/delete" data-confirm="确定删除这个产品吗？"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}"><button type="submit" class="danger-link">删除</button></form></td></tr>`).join("");
-  const body = `<div class="admin-title-row"><div><h1>产品管理</h1><p>共 ${Number(total).toLocaleString("zh-CN")} 个产品</p></div><a class="primary-button" href="/yc.php/products/new">＋ 增加产品</a></div><form class="admin-search" method="get" action="/yc.php"><input type="search" name="q" value="${escapeHtml(query)}" placeholder="搜索标题或商品 ID"><button type="submit">搜索</button></form><div class="table-card"><table><thead><tr><th>图片</th><th>产品</th><th>分类</th><th>价格</th><th>状态</th><th>操作</th></tr></thead><tbody>${rows || `<tr><td colspan="6" class="empty-cell">没有找到产品</td></tr>`}</tbody></table></div>${page > 1 ? `<a class="page-link" href="/yc.php?page=${page - 1}&q=${encodeURIComponent(query)}">上一页</a>` : ""}${products.length === 60 ? `<a class="page-link" href="/yc.php?page=${page + 1}&q=${encodeURIComponent(query)}">下一页</a>` : ""}`;
+export function renderAdminProducts({ session, products, total, page, query, cnyPerUsd = 7.2, notice = "" }) {
+  const rows = products.map((product) => `<tr><td><img class="admin-thumb" src="${escapeHtml(safeUrl(product.main_image, PLACEHOLDER))}" alt=""></td><td><strong>${escapeHtml(product.title)}</strong><small>ID ${Number(product.id)} · ${escapeHtml(product.source_id)}</small></td><td>${escapeHtml(product.category_name || "")}</td><td>¥${Number(product.price || 0).toFixed(2)}</td><td><span class="status ${product.status ? "live" : "hidden"}">${product.status ? "显示" : "隐藏"}</span></td><td class="row-actions"><a href="/yc.php/products/${Number(product.id)}/edit">编辑</a><form method="post" action="/yc.php/products/${Number(product.id)}/delete" data-confirm="确定删除这个产品吗？"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}"><button type="submit" class="danger-link">删除</button></form></td></tr>`).join("");
+  const body = `<div class="admin-title-row"><div><h1>产品管理</h1><p>共 ${Number(total).toLocaleString("zh-CN")} 个产品；后台价格均为人民币</p></div><a class="primary-button" href="/yc.php/products/new">＋ 增加产品</a></div><form class="currency-form" method="post" action="/yc.php/settings/currency"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}"><label>前台美元换算汇率：1 USD = ¥ <input type="number" name="cny_per_usd" min="1" max="20" step="0.01" value="${escapeHtml(cnyPerUsd)}" required></label><button type="submit">保存汇率</button></form><form class="admin-search" method="get" action="/yc.php"><input type="search" name="q" value="${escapeHtml(query)}" placeholder="搜索标题或商品 ID"><button type="submit">搜索</button></form><div class="table-card"><table><thead><tr><th>图片</th><th>产品</th><th>分类</th><th>价格（人民币）</th><th>状态</th><th>操作</th></tr></thead><tbody>${rows || `<tr><td colspan="6" class="empty-cell">没有找到产品</td></tr>`}</tbody></table></div>${page > 1 ? `<a class="page-link" href="/yc.php?page=${page - 1}&q=${encodeURIComponent(query)}">上一页</a>` : ""}${products.length === 60 ? `<a class="page-link" href="/yc.php?page=${page + 1}&q=${encodeURIComponent(query)}">下一页</a>` : ""}`;
   return adminLayout("产品管理", body, { session, notice });
 }
 
@@ -262,7 +269,7 @@ export function renderProductForm({ session, categories, product = null, error =
   const categoryOptions = categories.filter((category) => category.id > 3).map((category) => `<option value="${Number(category.id)}" ${Number(product?.category_id) === Number(category.id) ? "selected" : ""}>${escapeHtml(category.name)}</option>`).join("");
   const body = `<div class="admin-title-row"><div><h1>${isEdit ? "编辑产品" : "增加产品"}</h1><p>${isEdit ? `产品 ID ${Number(product.id)}` : "填写产品资料并上传图片"}</p></div><a class="secondary-button" href="/yc.php">返回列表</a></div>
   <form class="product-form" method="post" action="/yc.php/products/save" enctype="multipart/form-data"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}"><input type="hidden" name="id" value="${isEdit ? Number(product.id) : ""}">
-    <section class="form-card"><h2>基本信息</h2><div class="form-grid"><label class="span-2">产品标题<input name="title" required maxlength="200" value="${escapeHtml(product?.title || "")}"></label><label>分类<select name="category_id" required>${categoryOptions}</select></label><label>状态<select name="status"><option value="1" ${product?.status !== 0 ? "selected" : ""}>显示</option><option value="0" ${product?.status === 0 ? "selected" : ""}>隐藏</option></select></label><label>价格<input type="number" name="price" min="0" step="0.01" value="${escapeHtml(product?.price || 0)}"></label><label>划线价<input type="number" name="crossed_price" min="0" step="0.01" value="${escapeHtml(product?.crossed_price || 0)}"></label><label>商品平台 ID<input name="source_id" maxlength="100" value="${escapeHtml(product?.source_id || "")}"></label><label>原始购买链接<input type="url" name="source_url" value="${escapeHtml(product?.source_url || "")}"></label><label class="span-2">副标题<input name="subtitle" maxlength="200" value="${escapeHtml(product?.subtitle || "")}"></label></div></section>
+    <section class="form-card"><h2>基本信息</h2><div class="form-grid"><label class="span-2">产品标题<input name="title" required maxlength="200" value="${escapeHtml(product?.title || "")}"></label><label>分类<select name="category_id" required>${categoryOptions}</select></label><label>状态<select name="status"><option value="1" ${product?.status !== 0 ? "selected" : ""}>显示</option><option value="0" ${product?.status === 0 ? "selected" : ""}>隐藏</option></select></label><label>价格（人民币 ¥）<input type="number" name="price" min="0" step="0.01" value="${escapeHtml(product?.price || 0)}"></label><label>划线价（人民币 ¥）<input type="number" name="crossed_price" min="0" step="0.01" value="${escapeHtml(product?.crossed_price || 0)}"></label><label>商品平台 ID<input name="source_id" maxlength="100" value="${escapeHtml(product?.source_id || "")}"></label><label>原始购买链接<input type="url" name="source_url" value="${escapeHtml(product?.source_url || "")}"></label><label class="span-2">副标题<input name="subtitle" maxlength="200" value="${escapeHtml(product?.subtitle || "")}"></label></div></section>
     <section class="form-card"><h2>图片</h2><p class="field-help">可直接上传 JPG、PNG、WEBP 或 GIF。单张不超过 1.5MB；新图片会存入 D1，不需要 R2。</p><label>主图网址<input name="main_image" value="${escapeHtml(product?.main_image || "")}" placeholder="/uploads/... 或 https://..."></label><label>上传新图片<input type="file" name="images" accept="image/jpeg,image/png,image/webp,image/gif" multiple></label><label>附加图片网址（每行一个）<textarea name="image_urls" rows="5" placeholder="https://example.com/image.jpg"></textarea></label>${imageRows ? `<div class="existing-images">${imageRows}</div>` : ""}</section>
     <section class="form-card"><h2>SEO 与说明</h2><label>SEO 标题<input name="seo_title" maxlength="200" value="${escapeHtml(product?.seo_title || "")}"></label><label>SEO 关键词<input name="seo_keywords" maxlength="300" value="${escapeHtml(product?.seo_keywords || "")}"></label><label>SEO 描述<textarea name="seo_description" rows="3">${escapeHtml(product?.seo_description || "")}</textarea></label><label>产品说明<textarea name="description" rows="8">${escapeHtml(product?.description || "")}</textarea></label></section>
     <div class="form-actions"><button class="primary-button" type="submit">${isEdit ? "保存修改" : "增加产品"}</button></div>

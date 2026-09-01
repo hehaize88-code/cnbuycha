@@ -39,7 +39,11 @@ export async function listProducts(db, { categoryId = 0, query = "", sort = "new
   const offset = Math.max(0, page - 1) * pageSize;
   const countRow = await db.prepare(`SELECT COUNT(*) AS total FROM products p ${where}`).bind(...bindings).first();
   const result = await db.prepare(
-    `SELECT p.*, c.name AS category_name, c.slug AS category_slug
+    `SELECT p.*,
+            COALESCE(NULLIF(p.main_image, ''),
+              (SELECT pi.url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.sort_order, pi.id LIMIT 1),
+              '') AS main_image,
+            c.name AS category_name, c.slug AS category_slug
        FROM products p
        LEFT JOIN categories c ON c.id = p.category_id
        ${where}
@@ -66,7 +70,11 @@ export async function getProduct(db, id, includeHidden = false) {
 
 export async function relatedProducts(db, product, limit = 12) {
   const result = await db.prepare(
-    `SELECT p.*, c.slug AS category_slug
+    `SELECT p.*,
+            COALESCE(NULLIF(p.main_image, ''),
+              (SELECT pi.url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.sort_order, pi.id LIMIT 1),
+              '') AS main_image,
+            c.slug AS category_slug
        FROM products p
        LEFT JOIN categories c ON c.id = p.category_id
       WHERE p.status = 1 AND p.category_id = ? AND p.id != ?

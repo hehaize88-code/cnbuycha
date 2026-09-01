@@ -17,6 +17,10 @@ button, input, select, textarea { font: inherit; }
 .secondary-button { color: #17314a; background: #e4ebf3; }
 .admin-search { display: flex; gap: .6rem; margin-bottom: 1rem; }
 .admin-search input { width: min(420px, 100%); }
+.currency-form { display: flex; align-items: flex-end; gap: .75rem; margin-bottom: 1rem; padding: .85rem 1rem; border: 1px solid #dbe5ef; border-radius: 12px; background: #eef7ff; }
+.currency-form label { display: flex; align-items: center; gap: .5rem; color: #30445c; font-weight: 700; }
+.currency-form input { width: 110px; }
+.currency-form button { min-height: 42px; border: 0; border-radius: 9px; padding: .65rem 1rem; color: #fff; background: #1769d2; cursor: pointer; }
 input, select, textarea { width: 100%; padding: .75rem .85rem; border: 1px solid #cad4df; border-radius: 9px; color: #172033; background: #fff; }
 textarea { resize: vertical; }
 .admin-search button { border: 0; border-radius: 9px; padding: .65rem 1rem; color: #fff; background: #1769d2; }
@@ -63,6 +67,8 @@ td small { display: block; margin-top: .25rem; color: #7b8798; }
   .admin-header nav { flex-wrap: wrap; justify-content: flex-end; gap: .6rem; }
   .admin-main { width: 94vw; margin-top: 1.5rem; }
   .admin-title-row { align-items: flex-start; flex-direction: column; }
+  .currency-form, .currency-form label { align-items: stretch; flex-direction: column; }
+  .currency-form input { width: 100%; }
   .form-grid { grid-template-columns: 1fr; }
   .span-2 { grid-column: auto; }
   .table-card { overflow-x: auto; }
