@@ -72,15 +72,17 @@ test("restored storefront and admin product workflow", async () => {
   const pending = [];
   const ctx = { waitUntil: (promise) => pending.push(promise) };
 
-  let response = await worker.fetch(new Request("https://www.cnbuycha.com/app.js?v=4"), env, ctx);
+  let response = await worker.fetch(new Request("https://www.cnbuycha.com/app.js?v=5"), env, ctx);
   assert.equal(response.status, 200);
   assert.match(response.headers.get("Content-Type"), /application\/javascript/);
   assert.match(await response.text(), /data-product-gallery/);
 
-  response = await worker.fetch(new Request("https://www.cnbuycha.com/site.css?v=4"), env, ctx);
+  response = await worker.fetch(new Request("https://www.cnbuycha.com/site.css?v=5"), env, ctx);
   assert.equal(response.status, 200);
   assert.match(response.headers.get("Content-Type"), /text\/css/);
-  assert.match(await response.text(), /\.gallery-track/);
+  const siteCss = await response.text();
+  assert.match(siteCss, /\.gallery-track/);
+  assert.match(siteCss, /grid-template-columns: repeat\(3, minmax\(0,1fr\)\)/);
 
   response = await worker.fetch(new Request("https://www.cnbuycha.com/"), env, ctx);
   assert.equal(response.status, 200);
@@ -103,7 +105,7 @@ test("restored storefront and admin product workflow", async () => {
   assert.match(body, /data-gallery-index="0"/);
   assert.match(body, /aria-label="Previous product image"/);
   assert.match(body, /Swipe or drag/);
-  assert.match(body, /\/app\.js\?v=4/);
+  assert.match(body, /\/app\.js\?v=5/);
   assert.ok(body.includes(`>${(Number(sample.price) / 7.2).toFixed(2)}<`));
   await Promise.all(pending);
 

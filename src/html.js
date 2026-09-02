@@ -53,9 +53,9 @@ function head({ title, description, canonical, css = "home" }, settings) {
   <meta property="og:description" content="${escapeHtml(summary)}">
   <meta property="og:type" content="website">
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/template/moban/pc/static/css/header.css?v=4">
-  <link rel="stylesheet" href="/template/moban/pc/static/css/${css}.css?v=4">
-  <link rel="stylesheet" href="/site.css?v=4">
+  <link rel="stylesheet" href="/template/moban/pc/static/css/header.css?v=5">
+  <link rel="stylesheet" href="/template/moban/pc/static/css/${css}.css?v=5">
+  <link rel="stylesheet" href="/site.css?v=5">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>`;
 }
@@ -92,7 +92,7 @@ function footer(settings) {
     <p class="copyright">© ${new Date().getUTCFullYear()} ${escapeHtml(settings.web_name || "CnbuySheet")}</p>
   </div>
 </footer>
-<script src="/app.js?v=4" defer></script>
+<script src="/app.js?v=5" defer></script>
 </body></html>`;
 }
 
