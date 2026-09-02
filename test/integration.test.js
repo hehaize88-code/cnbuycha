@@ -87,6 +87,10 @@ test("restored storefront and admin product workflow", async () => {
   response = await worker.fetch(new Request("https://www.cnbuycha.com/"), env, ctx);
   assert.equal(response.status, 200);
   let body = await response.text();
+  assert.match(body, /China Shopping Spreadsheet 2026: W2C &amp; QC Finds \| CnBuyCha/);
+  assert.doesNotMatch(body, /<meta name="keywords"/);
+  assert.match(response.headers.get("Content-Security-Policy"), /googletagmanager\.com/);
+  assert.doesNotMatch(response.headers.get("Content-Security-Policy"), /unsafe-inline/);
   assert.match(body, /Latest Products/);
   assert.match(body, /Cnbuy/);
   const latest = database.prepare("SELECT main_image, price FROM products WHERE status = 1 ORDER BY created_at DESC, id DESC LIMIT 1").get();
@@ -105,9 +109,33 @@ test("restored storefront and admin product workflow", async () => {
   assert.match(body, /data-gallery-index="0"/);
   assert.match(body, /aria-label="Previous product image"/);
   assert.match(body, /Swipe or drag/);
-  assert.match(body, /\/app\.js\?v=5/);
+  assert.match(body, /itemtype="https:\/\/schema\.org\/Product"/);
+  assert.match(body, /itemtype="https:\/\/schema\.org\/BreadcrumbList"/);
+  assert.match(body, /\/app\.js\?v=7/);
   assert.ok(body.includes(`>${(Number(sample.price) / 7.2).toFixed(2)}<`));
   await Promise.all(pending);
+
+  response = await worker.fetch(new Request("https://www.cnbuycha.com/app.js?v=7"), env, ctx);
+  assert.equal(response.status, 200);
+  const appScript = await response.text();
+  assert.match(appScript, /G-47YFQ43WE1/);
+  assert.match(appScript, /analyticsReady/);
+
+  response = await worker.fetch(new Request(`https://www.cnbuycha.com/AllProducts/${sample.id}.html`), env, ctx);
+  assert.equal(response.status, 301);
+  assert.equal(response.headers.get("Location"), `https://cnbuycha.com/${sample.slug}/${sample.id}.html`);
+
+  response = await worker.fetch(new Request("https://www.cnbuycha.com/w2c-spreadsheet/"), env, ctx);
+  assert.equal(response.status, 200);
+  body = await response.text();
+  assert.match(body, /W2C Spreadsheet for China Shopping Finds/);
+  assert.match(body, /What a useful W2C entry includes/);
+
+  response = await worker.fetch(new Request("https://www.cnbuycha.com/sitemap.xml"), env, ctx);
+  assert.equal(response.status, 200);
+  body = await response.text();
+  assert.match(body, /https:\/\/cnbuycha\.com\/w2c-spreadsheet\//);
+  assert.match(body, /https:\/\/cnbuycha\.com\/qc-photos\//);
 
   response = await worker.fetch(new Request("https://www.cnbuycha.com/yc.php"), env, ctx);
   assert.equal(response.status, 200);

@@ -34,9 +34,9 @@ export function productUrl(product) {
   return `/${slug}/${Number(product.id)}.html`;
 }
 
-function head({ title, description, canonical, css = "home" }, settings) {
-  const siteName = settings.web_name || "CnbuySheet";
-  const pageTitle = title ? `${title} - ${siteName}` : `${settings.web_title || "Kakobuy"} - ${siteName}`;
+function head({ title, description, canonical, css = "home", image = "", type = "website" }, settings) {
+  const siteName = "CnBuyCha";
+  const pageTitle = title ? `${title} | ${siteName}` : `China Shopping Spreadsheet 2026: W2C & QC Finds | ${siteName}`;
   const summary = description || settings.web_description || "China shopping spreadsheet finds";
   return `<!doctype html>
 <html lang="en">
@@ -45,13 +45,16 @@ function head({ title, description, canonical, css = "home" }, settings) {
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>${escapeHtml(pageTitle)}</title>
   <meta name="description" content="${escapeHtml(summary)}">
-  <meta name="keywords" content="${escapeHtml(settings.web_keywords || "")}">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0a192f">
   <link rel="canonical" href="${escapeHtml(canonical || "/")}">
   <meta property="og:title" content="${escapeHtml(pageTitle)}">
   <meta property="og:description" content="${escapeHtml(summary)}">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="${escapeHtml(type)}">
+  <meta property="og:site_name" content="CnBuyCha">
+  <meta property="og:url" content="${escapeHtml(canonical || "/")}">
+  ${image ? `<meta property="og:image" content="${escapeHtml(image)}">` : ""}
+  <meta name="twitter:card" content="${image ? "summary_large_image" : "summary"}">
   <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="/template/moban/pc/static/css/header.css?v=5">
   <link rel="stylesheet" href="/template/moban/pc/static/css/${css}.css?v=5">
@@ -89,10 +92,11 @@ function footer(settings) {
   <div class="container footer-inner">
     <div class="footer-brand">${escapeHtml(settings.brand_first || "Cnbuy")}<span>${escapeHtml(settings.brand_second || "Sheet")}</span></div>
     <p>China shopping spreadsheet finds for global buyers.</p>
-    <p class="copyright">© ${new Date().getUTCFullYear()} ${escapeHtml(settings.web_name || "CnbuySheet")}</p>
+    <nav class="breadcrumb" aria-label="Shopping guides"><a href="/w2c-spreadsheet/">W2C Spreadsheet</a> · <a href="/qc-photos/">QC Photos</a> · <a href="/weidian-spreadsheet/">Weidian</a> · <a href="/taobao-spreadsheet/">Taobao</a> · <a href="/reps-glossary/">Shopping Terms</a></nav>
+    <p class="copyright">© ${new Date().getUTCFullYear()} CnBuyCha</p>
   </div>
 </footer>
-<script src="/app.js?v=5" defer></script>
+<script src="/app.js?v=7" defer></script>
 </body></html>`;
 }
 
@@ -135,7 +139,11 @@ export function renderHome({ settings, categories, products, origin }) {
       <span class="category-count">${Number(category.product_count || 0)} finds</span>
     </a>`;
   }).join("");
-  return `${head({ canonical: `${origin}/` }, settings)}
+  return `${head({
+    title: "China Shopping Spreadsheet 2026: W2C & QC Finds",
+    description: "Browse thousands of China shopping finds with product photos, source prices, Weidian links and purchase options for leading shopping agents.",
+    canonical: `${origin}/`,
+  }, settings)}
 <body><div id="particles-js"></div>${header(settings)}
 <main>
   <section id="home" class="hero">
@@ -178,7 +186,8 @@ function pagination({ page, pages, baseUrl, query, sort }) {
 
 export function renderProductList({ settings, categories, currentCategory, products, total, page, pageSize, query, sort, origin, pathname }) {
   const title = currentCategory?.name || (query ? `Search: ${query}` : "All Products");
-  const description = currentCategory?.seo_description || `Browse ${total} China shopping spreadsheet finds.`;
+  const seoTitle = query ? `Search results for ${query}` : currentCategory ? `${currentCategory.name} W2C Spreadsheet` : "China Shopping Spreadsheet – All Products";
+  const description = currentCategory?.seo_description || `Browse ${total} China shopping spreadsheet finds with product photos, source prices and direct seller links.`;
   const baseUrl = pathname.endsWith("/") ? pathname : `${pathname}/`;
   const categoryButtons = [`<a class="filter-btn${!currentCategory ? " active" : ""}" href="/AllProducts/"><span class="btn-text">ALL</span></a>`]
     .concat(categories.filter((item) => item.id > 3).map((item) => `<a class="filter-btn${currentCategory?.id === item.id ? " active" : ""}" href="/${escapeHtml(item.slug)}/"><span class="btn-text">${escapeHtml(item.name)}</span></a>`)).join("");
@@ -189,7 +198,7 @@ export function renderProductList({ settings, categories, currentCategory, produ
     if (value !== "new") params.set("sort", value);
     return `<a class="sort-btn${sort === value ? " active" : ""}" href="${baseUrl}${params.toString() ? `?${params}` : ""}"><i class="fas ${icon}"></i><span class="btn-text">${label}</span></a>`;
   };
-  return `${head({ title, description, canonical: `${origin}${pathname}`, css: "list" }, settings)}
+  return `${head({ title: seoTitle, description, canonical: `${origin}${pathname}`, css: "list" }, settings)}
 <body><div id="particles-js"></div>${header(settings)}
 <main>
   <div class="page-header"><h1>${escapeHtml(title)}</h1><p>${escapeHtml(description)}</p></div>
@@ -228,15 +237,20 @@ export function renderProductDetail({ settings, product, related, origin }) {
     .filter((value, index, array) => array.indexOf(value) === index);
   if (!gallery.length) gallery.push(PLACEHOLDER);
   const hasMultipleImages = gallery.length > 1;
-  const gallerySlides = gallery.map((image, index) => `<div class="gallery-slide" data-gallery-slide role="group" aria-label="${index + 1} of ${gallery.length}"><img${index === 0 ? " id=\"mainProductImage\"" : ""} src="${escapeHtml(safeUrl(image, PLACEHOLDER))}" alt="${escapeHtml(product.title)} ${index + 1}" draggable="false" ${index === 0 ? "fetchpriority=\"high\"" : "loading=\"lazy\""} decoding="async"></div>`).join("");
+  const gallerySlides = gallery.map((image, index) => `<div class="gallery-slide" data-gallery-slide role="group" aria-label="${index + 1} of ${gallery.length}"><img${index === 0 ? " id=\"mainProductImage\"" : ""} itemprop="image" src="${escapeHtml(safeUrl(image, PLACEHOLDER))}" alt="${escapeHtml(product.title)} ${index + 1}" draggable="false" ${index === 0 ? "fetchpriority=\"high\"" : "loading=\"lazy\""} decoding="async"></div>`).join("");
   const galleryThumbnails = gallery.map((image, index) => `<button class="thumbnail${index === 0 ? " active" : ""}" type="button" data-gallery-index="${index}" aria-label="Show product image ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"><img src="${escapeHtml(safeUrl(image, PLACEHOLDER))}" alt="" loading="lazy" decoding="async"></button>`).join("");
   const platforms = purchasePlatforms(product.source_id);
   const sourceUrl = safeUrl(product.source_url || `https://weidian.com/item.html?itemID=${encodeURIComponent(product.source_id || "")}`);
-  return `${head({ title: product.seo_title || product.title, description: product.seo_description || product.title, canonical, css: "detail" }, settings)}
+  const usdPrice = formatUsdFromCny(product.price, settings);
+  const description = product.seo_description || `View ${product.title} photos, source price, Weidian link and purchase options. Browse more ${product.category_name || "China shopping"} finds on CnBuyCha.`;
+  return `${head({ title: product.seo_title || `${product.title} – W2C Link & Photos`, description, canonical, css: "detail", image: safeUrl(gallery[0], ""), type: "product" }, settings)}
 <body><div id="particles-js"></div>${header(settings)}
 <main class="detail-container">
-  <div class="breadcrumb"><a href="/">Home</a> / <a href="/${escapeHtml(product.category_slug)}/">${escapeHtml(product.category_name)}</a> / <span>${escapeHtml(product.title)}</span></div>
-  <section class="product-detail">
+  <div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList"><span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></span> / <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/${escapeHtml(product.category_slug)}/"><span itemprop="name">${escapeHtml(product.category_name)}</span></a><meta itemprop="position" content="2"></span> / <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name">${escapeHtml(product.title)}</span><meta itemprop="position" content="3"></span></div>
+  <section class="product-detail" itemscope itemtype="https://schema.org/Product">
+    <link itemprop="url" href="${escapeHtml(canonical)}">
+    <meta itemprop="sku" content="${escapeHtml(product.source_id || String(product.id))}">
+    <meta itemprop="description" content="${escapeHtml(description)}">
     <div class="product-gallery" data-product-gallery>
       <div class="main-image gallery-viewport" data-gallery-viewport tabindex="0" role="region" aria-roledescription="carousel" aria-label="Product image gallery">
         <div class="gallery-track" data-gallery-track>${gallerySlides}</div>
@@ -246,7 +260,7 @@ export function renderProductDetail({ settings, product, related, origin }) {
       </div>
       <div class="thumbnail-container" data-gallery-thumbnails aria-label="Product image thumbnails">${galleryThumbnails}</div>
     </div>
-    <div class="product-info"><h1 class="product-title">${escapeHtml(product.title)}</h1><div class="product-id">ID: ${escapeHtml(product.source_id)}</div><div class="product-meta"><div class="product-price" data-currency="USD" title="Converted from CNY">${formatUsdFromCny(product.price, settings)}</div><div class="product-views"><i class="fas fa-eye"></i><span>${Number(product.views || 0)}</span></div></div>
+    <div class="product-info"><h1 class="product-title" itemprop="name">${escapeHtml(product.title)}</h1><div class="product-id">ID: ${escapeHtml(product.source_id)}</div><div class="product-meta"><div class="product-price" data-currency="USD" title="Converted from CNY" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><link itemprop="url" href="${escapeHtml(canonical)}"><meta itemprop="priceCurrency" content="USD"><meta itemprop="price" content="${usdPrice}"><link itemprop="availability" href="https://schema.org/InStock">${usdPrice}</div><div class="product-views"><i class="fas fa-eye"></i><span>${Number(product.views || 0)}</span></div></div>
       <div class="product-actions"><button class="action-btn buy-now-btn" type="button" data-open-platforms><i class="fas fa-shopping-cart"></i> Buy Link</button><a href="${escapeHtml(sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer" class="action-btn weidian-btn"><i class="fas fa-store"></i> Weidian Link</a><div class="actions-row"><button class="action-btn copy-link-btn" type="button" data-copy-url="${escapeHtml(canonical)}"><i class="fas fa-share-alt"></i> Share</button></div></div>
       <div class="product-info-section"><div class="product-description">How to bypass “Non-purchasable item” warnings automatically!</div><a href="/video" class="action-btn how-to-buy-btn"><i class="fas fa-question-circle"></i> Tutorial</a></div>
     </div>
@@ -257,6 +271,101 @@ export function renderProductDetail({ settings, product, related, origin }) {
 <div class="platform-modal" id="platformModal" hidden><div class="platform-modal-content"><button class="close-modal" type="button" data-close-modal>&times;</button><h3>Select Purchase Platform</h3><p class="modal-note">Choose an agent to open its purchase page.</p><div class="platform-list">${platforms.map(([name, image, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="nofollow noopener noreferrer" class="platform-option"><img src="${image}" alt=""><span>${name}</span></a>`).join("")}</div></div></div>
 <div class="copy-success" id="copySuccess"><i class="fas fa-check-circle"></i> Link copied</div>
 ${footer(settings)}`;
+}
+
+export const SEO_GUIDES = {
+  "/w2c-spreadsheet/": {
+    title: "W2C Spreadsheet 2026: Product Links, Photos & Finds",
+    heading: "W2C Spreadsheet for China Shopping Finds",
+    description: "Use a searchable W2C spreadsheet with product photos, source prices, Weidian links and category filters for faster China shopping research.",
+    intro: "W2C means where to cop: where a product can be found and which source link opens the original listing. CnBuyCha turns spreadsheet-style product research into searchable web pages so you can compare images, prices and categories before choosing a shopping agent.",
+    sections: [
+      ["What a useful W2C entry includes", "A useful entry should identify the product, show clear source images, display the original CNY price, provide a stable seller link and keep the product in the correct category. Those fields make it easier to compare finds without opening dozens of unrelated tabs."],
+      ["How to use the spreadsheet", "Start with a category such as shoes, hoodies, jackets or accessories. Open the product page to review every available image, then use the Weidian link to check the source listing. When you are ready, the purchase button lets you choose from supported shopping agents."],
+      ["Check before ordering", "Seller stock, colors, sizes and prices can change. Treat the spreadsheet as a discovery tool and confirm the current listing inside your selected agent before payment. Review warehouse photos when they become available and compare them with the seller images."],
+    ],
+  },
+  "/rep-spreadsheet/": {
+    title: "Rep Spreadsheet 2026: Product Finds & Source Links",
+    heading: "Rep Spreadsheet with Searchable Product Finds",
+    description: "Browse spreadsheet-style product finds with images, source prices, categories and direct seller links in one searchable catalog.",
+    intro: "A rep spreadsheet is most useful when it helps shoppers verify a product rather than presenting a long list of unexplained links. CnBuyCha organizes finds by category and gives each item its own page with images, a source ID, pricing information and agent purchase options.",
+    sections: [
+      ["Search by product type", "Use category pages to narrow the catalog before opening individual products. This reduces duplicate searching and makes it easier to compare similar shoes, clothing, accessories and other finds."],
+      ["Verify the source", "Open the original seller link and confirm that the listing still matches the title and images shown here. Product availability and seller terms are controlled by the source marketplace and can change after a spreadsheet entry is published."],
+      ["Use photos as evidence", "Compare seller images with later warehouse QC photos whenever possible. Look at shape, materials, stitching, labels, measurements and visible defects instead of relying only on a product title."],
+    ],
+  },
+  "/qc-photos/": {
+    title: "QC Photos Guide: How to Check Product Images",
+    heading: "How to Check QC Photos Before Shipping",
+    description: "Learn how to review QC photos for shape, stitching, labels, color, measurements and visible defects before shipping a purchase.",
+    intro: "QC photos are warehouse images taken after an item arrives from the seller. They help you decide whether the received item broadly matches the listing before it is packed for international shipping.",
+    sections: [
+      ["Start with the full shape", "Check the front, back and side profile first. Compare the overall proportions, symmetry and color with the seller images. Lighting can alter color, so use several photos rather than judging from one frame."],
+      ["Inspect construction details", "Zoom in on seams, stitching, print alignment, hardware, soles, labels and edges. Look for stains, glue marks, loose threads, dents or damage that could affect use."],
+      ["Confirm measurements", "For clothing and shoes, request or review measurement photos when sizing matters. Compare those measurements with an item you already own; size labels alone are not a reliable international standard."],
+      ["Make a practical decision", "Separate cosmetic differences from functional problems. If an important detail is unclear, request an additional photo through the shopping agent before accepting or returning the item."],
+    ],
+  },
+  "/weidian-spreadsheet/": {
+    title: "Weidian Spreadsheet 2026: Product Links & Finds",
+    heading: "Weidian Spreadsheet and Product Link Guide",
+    description: "Browse Weidian product finds with source IDs, images, prices and purchase links for supported China shopping agents.",
+    intro: "Weidian listings are commonly identified by an item ID inside the seller URL. CnBuyCha keeps that source ID with each product so the same listing can be opened directly or transferred to a supported shopping agent.",
+    sections: [
+      ["Read the source link", "A Weidian product URL normally contains an itemID value. Confirm that the ID, product images and current listing title match before placing an order."],
+      ["Why agent links are offered", "Many international shoppers use a purchasing agent to place the domestic order, receive the item at a warehouse and arrange international shipping. The product page lets you select an agent without changing the underlying source item ID."],
+      ["Listings can change", "A seller may change stock, options, price or even remove a listing. Always verify the live source page and the final agent order summary rather than relying on an older spreadsheet snapshot."],
+    ],
+  },
+  "/taobao-spreadsheet/": {
+    title: "Taobao Spreadsheet 2026: China Shopping Finds",
+    heading: "Taobao Spreadsheet for Searchable Finds",
+    description: "Use category filters, product images and source information to research Taobao and China shopping finds before ordering through an agent.",
+    intro: "A Taobao spreadsheet should make product discovery easier while keeping enough source information for verification. Search by category, compare product images and check the current marketplace listing before ordering.",
+    sections: [
+      ["Find the right category", "Begin with the product type instead of a broad keyword. Category pages make it easier to compare similar items and avoid unrelated results."],
+      ["Compare listing details", "Check available variants, seller photos, domestic shipping terms and the current price on the source page. Translated titles may differ, so images and item identifiers are important verification signals."],
+      ["Review the warehouse result", "After the seller ships to the agent warehouse, use QC photos and measurements to confirm the received item before international parcel submission."],
+    ],
+  },
+  "/how-to-buy/": {
+    title: "How to Buy from China: W2C & Shopping Agent Guide",
+    heading: "How to Use China Shopping Links",
+    description: "A practical guide to finding a product, checking the seller link, choosing an agent, reviewing QC photos and preparing international shipping.",
+    intro: "The usual process has five stages: find a source listing, submit it to a shopping agent, wait for domestic delivery, review warehouse QC photos and then select an international shipping option.",
+    sections: [
+      ["1. Find and verify", "Open a product page, review its images and source price, then open the original listing. Confirm the product options and seller information before continuing."],
+      ["2. Choose an agent", "Use the purchase platform selector to open the same source item with a supported agent. Review the agent order page carefully because service fees, payment options and supported routes vary."],
+      ["3. Review warehouse photos", "When the item arrives at the warehouse, compare QC photos and measurements with the source listing. Request more evidence if an important detail is not visible."],
+      ["4. Prepare the parcel", "Confirm weight, dimensions, packaging choices, route restrictions, declared value and estimated charges before submitting international shipping."],
+    ],
+  },
+  "/reps-glossary/": {
+    title: "W2C, QC, GP, GL & RL Meaning: Shopping Terms",
+    heading: "W2C and QC Shopping Terms Explained",
+    description: "Understand common spreadsheet terms including W2C, QC, GP, GL, RL, batch and haul before using China shopping links.",
+    intro: "Spreadsheet communities use short terms to describe product discovery and quality checks. Understanding them makes product pages, warehouse photos and buying discussions easier to follow.",
+    sections: [
+      ["W2C", "Where to cop. This normally refers to the source link or seller listing for a product."],
+      ["QC", "Quality check. In shopping-agent use, this usually means the warehouse photos reviewed before international shipping."],
+      ["GP", "Guinea pig. A shopper who orders a less-tested listing first and shares the result may be described as GPing the item."],
+      ["GL and RL", "Green light and red light. GL generally means the item is acceptable to the buyer; RL means the buyer wants to reject, return or exchange it."],
+      ["Batch and haul", "Batch identifies a production version or source grouping. A haul is a group of purchased items shipped or presented together."],
+    ],
+  },
+};
+
+export function renderSeoGuide({ settings, guide, origin, pathname }) {
+  const sections = guide.sections.map(([heading, body]) => `<section><h2>${escapeHtml(heading)}</h2><p>${escapeHtml(body)}</p></section>`).join("");
+  return `${head({ title: guide.title, description: guide.description, canonical: `${origin}${pathname}`, css: "list" }, settings)}
+<body><div id="particles-js"></div>${header(settings)}
+<main class="detail-container">
+  <div class="breadcrumb"><a href="/">Home</a> / <span>${escapeHtml(guide.heading)}</span></div>
+  <div class="page-header"><h1>${escapeHtml(guide.heading)}</h1><p>${escapeHtml(guide.description)}</p></div>
+  <article class="product-copy glass-card"><p>${escapeHtml(guide.intro)}</p>${sections}<p><a href="/AllProducts/">Browse all product finds</a> or start with <a href="/shoes/">shoes</a>, <a href="/hoodies-sweaters/">hoodies and sweaters</a>, <a href="/jackets/">jackets</a> and <a href="/accessories/">accessories</a>.</p></article>
+</main>${footer(settings)}`;
 }
 
 function adminLayout(title, body, { session, notice = "", error = "" } = {}) {

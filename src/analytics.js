@@ -1,0 +1,1 @@
+export const ANALYTICS_JS = 'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date);gtag("config","G-47YFQ43WE1");document.documentElement.dataset.analyticsReady="true";';

@@ -8,6 +8,7 @@ import {
   saveProduct,
 } from "./db.js";
 import { APP_JS, SITE_CSS } from "./client-assets.js";
+import { ANALYTICS_JS } from "./analytics.js";
 import {
   renderAdminProducts,
   renderErrorPage,
@@ -16,7 +17,9 @@ import {
   renderProductDetail,
   renderProductForm,
   renderProductList,
+  renderSeoGuide,
   safeUrl,
+  SEO_GUIDES,
 } from "./html.js";
 import {
   clearSessionCookie,
@@ -38,8 +41,11 @@ const DEFAULT_SETTINGS = {
   cny_per_usd: "7.20",
 };
 
+const CANONICAL_ORIGIN = "https://cnbuycha.com";
+const GTAG_INLINE_HASH = "'sha256-uAswmpdXrX64y9duzhrxzSbktnhjti1w1qv9esUsOFQ='";
+
 const securityHeaders = {
-  "Content-Security-Policy": "default-src 'self'; style-src 'self' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'",
+  "Content-Security-Policy": `default-src 'self'; style-src 'self' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' ${GTAG_INLINE_HASH} https://www.googletagmanager.com https://static.cloudflareinsights.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://cloudflareinsights.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'`,
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "X-Content-Type-Options": "nosniff",
@@ -51,7 +57,7 @@ function html(body, status = 200, extraHeaders = {}) {
     status,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "public, max-age=0, s-maxage=120, stale-while-revalidate=600",
+      "Cache-Control": "public, max-age=0, s-maxage=600, stale-while-revalidate=86400",
       ...securityHeaders,
       ...extraHeaders,
     },
@@ -64,6 +70,10 @@ function adminHtml(body, status = 200, extraHeaders = {}) {
 
 function redirect(location, headers = {}) {
   return new Response(null, { status: 303, headers: { Location: location, "Cache-Control": "no-store", ...headers } });
+}
+
+function permanentRedirect(location) {
+  return new Response(null, { status: 301, headers: { Location: location, "Cache-Control": "public, max-age=3600" } });
 }
 
 function integer(value, fallback = 0, min = 0, max = Number.MAX_SAFE_INTEGER) {
@@ -311,6 +321,7 @@ async function sitemap(env, origin) {
   const urls = [
     `<url><loc>${origin}/</loc></url>`,
     `<url><loc>${origin}/AllProducts/</loc></url>`,
+    ...Object.keys(SEO_GUIDES).map((pathname) => `<url><loc>${origin}${pathname}</loc><lastmod>2026-09-02</lastmod></url>`),
     ...(categories.results || []).map((row) => `<url><loc>${origin}/${row.slug}/</loc></url>`),
     ...(products.results || []).map((row) => `<url><loc>${origin}/${row.slug || "AllProducts"}/${row.id}.html</loc><lastmod>${new Date(Number(row.updated_at || 0) * 1000).toISOString().slice(0, 10)}</lastmod></url>`),
   ];
@@ -320,23 +331,28 @@ async function sitemap(env, origin) {
 }
 
 async function publicRoute(request, env, ctx, url) {
-  const origin = url.origin;
+  const origin = CANONICAL_ORIGIN;
   const settings = { ...DEFAULT_SETTINGS, ...await getSettings(env.DB) };
   if (url.pathname === "/robots.txt") {
     return new Response(`User-agent: *\nAllow: /\nDisallow: /yc.php\nSitemap: ${origin}/sitemap.xml\n`, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
   }
   if (url.pathname === "/sitemap.xml") return sitemap(env, origin);
-  if (url.pathname === "/" || url.pathname === "/index.php") {
+  if (url.pathname === "/index.php") return permanentRedirect(`${origin}/`);
+  if (url.pathname === "/") {
     const [categories, latest] = await Promise.all([
       getCategories(env.DB),
       listProducts(env.DB, { pageSize: 24 }),
     ]);
     return html(renderHome({ settings, categories, products: latest.products, origin }));
   }
+  const guide = SEO_GUIDES[url.pathname];
+  if (guide) return html(renderSeoGuide({ settings, guide, origin, pathname: url.pathname }));
   const productMatch = url.pathname.match(/^\/(?:AllProducts\/)?(?:[A-Za-z0-9-]+\/)?(\d+)\.html$/i);
   if (productMatch) {
     const product = await getProduct(env.DB, Number(productMatch[1]));
     if (!product) return html(renderErrorPage(404, "Product not found", settings), 404);
+    const canonicalPath = `/${String(product.category_slug || "AllProducts").replace(/[^a-z0-9-]/gi, "") || "AllProducts"}/${Number(product.id)}.html`;
+    if (url.pathname !== canonicalPath) return permanentRedirect(`${origin}${canonicalPath}`);
     if (ctx?.waitUntil) ctx.waitUntil(env.DB.prepare("UPDATE products SET views = views + 1 WHERE id = ?").bind(product.id).run());
     const related = await relatedProducts(env.DB, product);
     return html(renderProductDetail({ settings, product, related, origin }));
@@ -349,6 +365,8 @@ async function publicRoute(request, env, ctx, url) {
   else if (segments.length === 1 && segments[0]?.toLowerCase() !== "allproducts") currentCategory = categories.find((item) => item.slug.toLowerCase() === segments[0].toLowerCase());
   const isList = cleanPath.toLowerCase() === "allproducts" || Boolean(currentCategory);
   if (isList) {
+    const canonicalPath = currentCategory ? `/${currentCategory.slug}/` : "/AllProducts/";
+    if (url.pathname !== canonicalPath) return permanentRedirect(`${origin}${canonicalPath}${url.search}`);
     const page = integer(url.searchParams.get("page"), 1, 1, 100000);
     const query = String(url.searchParams.get("q") || url.searchParams.get("keywords") || "").trim().slice(0, 100);
     const sort = ["new", "click", "price"].includes(url.searchParams.get("sort")) ? url.searchParams.get("sort") : "new";
@@ -360,6 +378,23 @@ async function publicRoute(request, env, ctx, url) {
   return html(renderErrorPage(404, "Page not found", settings), 404);
 }
 
+async function cachedPublicRoute(request, env, ctx, url) {
+  const cacheable = request.method === "GET" && !url.search;
+  const edgeCache = typeof caches !== "undefined" ? caches.default : null;
+  const cacheKey = cacheable && edgeCache ? new Request(`${CANONICAL_ORIGIN}${url.pathname}`, request) : null;
+  if (cacheKey) {
+    const cached = await edgeCache.match(cacheKey);
+    if (cached) return cached;
+  }
+  const response = await publicRoute(request, env, ctx, url);
+  if (cacheKey && response.status === 200 && !response.headers.get("Cache-Control")?.includes("no-store")) {
+    const write = edgeCache.put(cacheKey, response.clone());
+    if (ctx?.waitUntil) ctx.waitUntil(write);
+    else await write;
+  }
+  return response;
+}
+
 function isStaticPath(pathname) {
   return pathname === "/favicon.ico" || pathname.startsWith("/template/") || pathname.startsWith("/public/") || /\.(?:css|js|svg|png|jpe?g|gif|webp|ico|woff2?)$/i.test(pathname);
 }
@@ -369,7 +404,7 @@ function serveEmbeddedAsset(request, pathname) {
   let body;
   let contentType;
   if (pathname === "/app.js") {
-    body = APP_JS;
+    body = `${ANALYTICS_JS}\n${APP_JS}`;
     contentType = "application/javascript; charset=utf-8";
   } else if (pathname === "/site.css") {
     body = SITE_CSS;
@@ -398,7 +433,7 @@ export default {
       if (url.pathname === "/health") return Response.json({ ok: true, service: "cnbuycha" });
       if (url.pathname === "/yc.php" || url.pathname.startsWith("/yc.php/")) return adminRoute(request, env, url);
       if (request.method !== "GET" && request.method !== "HEAD") return new Response("Method not allowed", { status: 405 });
-      return publicRoute(request, env, ctx, url);
+      return cachedPublicRoute(request, env, ctx, url);
     } catch (error) {
       console.error("Request failed", error);
       if (url.pathname === "/yc.php" || url.pathname.startsWith("/yc.php/")) {
