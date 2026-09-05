@@ -19,7 +19,10 @@ export function escapeHtml(value) {
 export function safeUrl(value, fallback = "#") {
   const raw = String(value || "").trim();
   if (!raw) return fallback;
-  if (raw.startsWith("/") && !raw.startsWith("//")) return raw.replace(/[\"'<>`]/g, "");
+  if (raw.startsWith("/") && !raw.startsWith("//")) {
+    const sanitized = raw.replace(/[\"'<>`]/g, "");
+    return sanitized.startsWith("/media/") && !sanitized.includes("?") ? `${sanitized}?v=2` : sanitized;
+  }
   try {
     const url = new URL(raw);
     if (url.protocol === "https:" || url.protocol === "http:") return url.href;
