@@ -113,7 +113,8 @@ async function serveStoredImage(env, path) {
   if (!key || key.includes("..") || key.startsWith("/")) return new Response("Not found", { status: 404 });
   const value = await env.DB.prepare("SELECT content_type, data FROM uploaded_files WHERE key = ?").bind(key).first();
   if (!value?.data) return new Response("Not found", { status: 404 });
-  return new Response(value.data, {
+  const bytes = Array.isArray(value.data) ? new Uint8Array(value.data) : value.data;
+  return new Response(bytes, {
     headers: {
       "Content-Type": value.content_type || "application/octet-stream",
       "Cache-Control": "public, max-age=31536000, immutable",
