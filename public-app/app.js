@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const track = document.querySelector(".carousel-track");
+  // Always open the carousel on the newest products, including after a browser
+  // restores the page's previous horizontal scroll position.
+  if (track) track.scrollLeft = 0;
   const scrollTrack = (direction) => track?.scrollBy({ left: direction * Math.max(280, track.clientWidth * 0.75), behavior: "smooth" });
   document.querySelector(".carousel-prev")?.addEventListener("click", () => scrollTrack(-1));
   document.querySelector(".carousel-next")?.addEventListener("click", () => scrollTrack(1));

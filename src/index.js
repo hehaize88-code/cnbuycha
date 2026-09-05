@@ -181,7 +181,7 @@ async function saveProductRequest(request, env, session) {
   const categories = await getCategories(env.DB, true);
   const categoryId = integer(form.get("category_id"), 0);
   const title = String(form.get("title") || "").trim().slice(0, 200);
-  const category = categories.find((item) => Number(item.id) === categoryId && Number(item.id) > 3);
+  const category = categories.find((item) => Number(item.id) === categoryId && Number(item.parent_id) === 1);
   const files = form.getAll("images").filter((item) => item && typeof item.arrayBuffer === "function" && item.size > 0);
   let error = "";
   if (!title) error = "请填写产品标题。";
@@ -316,7 +316,7 @@ async function adminRoute(request, env, url) {
 
 async function sitemap(env, origin) {
   const [categories, products] = await Promise.all([
-    env.DB.prepare("SELECT slug FROM categories WHERE enabled = 1 AND id > 3 ORDER BY id").all(),
+    env.DB.prepare("SELECT slug FROM categories WHERE enabled = 1 AND parent_id = 1 ORDER BY id").all(),
     env.DB.prepare("SELECT p.id, p.updated_at, c.slug FROM products p LEFT JOIN categories c ON c.id = p.category_id WHERE p.status = 1 ORDER BY p.id").all(),
   ]);
   const urls = [
@@ -362,8 +362,8 @@ async function publicRoute(request, env, ctx, url) {
   const segments = cleanPath.split("/").filter(Boolean);
   const categories = await getCategories(env.DB);
   let currentCategory = null;
-  if (segments[0]?.toLowerCase() === "allproducts" && segments[1]) currentCategory = categories.find((item) => item.slug.toLowerCase() === segments[1].toLowerCase());
-  else if (segments.length === 1 && segments[0]?.toLowerCase() !== "allproducts") currentCategory = categories.find((item) => item.slug.toLowerCase() === segments[0].toLowerCase());
+  if (segments[0]?.toLowerCase() === "allproducts" && segments[1]) currentCategory = categories.find((item) => Number(item.parent_id) === 1 && item.slug.toLowerCase() === segments[1].toLowerCase());
+  else if (segments.length === 1 && segments[0]?.toLowerCase() !== "allproducts") currentCategory = categories.find((item) => Number(item.parent_id) === 1 && item.slug.toLowerCase() === segments[0].toLowerCase());
   const isList = cleanPath.toLowerCase() === "allproducts" || Boolean(currentCategory);
   if (isList) {
     const canonicalPath = currentCategory ? `/${currentCategory.slug}/` : "/AllProducts/";
@@ -380,7 +380,10 @@ async function publicRoute(request, env, ctx, url) {
 }
 
 async function cachedPublicRoute(request, env, ctx, url) {
-  const cacheable = request.method === "GET" && !url.search;
+  // Product and category pages change through the admin panel. Keep only the
+  // editorial guides in the edge cache so newly saved products are visible
+  // immediately instead of being hidden by a stale storefront response.
+  const cacheable = request.method === "GET" && !url.search && Boolean(SEO_GUIDES[url.pathname]);
   const edgeCache = typeof caches !== "undefined" ? caches.default : null;
   const cacheKey = cacheable && edgeCache ? new Request(`${CANONICAL_ORIGIN}${url.pathname}`, request) : null;
   if (cacheKey) {

@@ -93,6 +93,7 @@ test("restored storefront and admin product workflow", async () => {
   assert.doesNotMatch(response.headers.get("Content-Security-Policy"), /unsafe-inline/);
   assert.match(body, /Latest Products/);
   assert.match(body, /Cnbuy/);
+  assert.doesNotMatch(body, /href="\/cnfans\/" class="category-item"/);
   const latest = database.prepare("SELECT main_image, price FROM products WHERE status = 1 ORDER BY created_at DESC, id DESC LIMIT 1").get();
   assert.ok(body.includes(`src="${latest.main_image}"`));
   assert.ok(body.includes(`>${(Number(latest.price) / 7.2).toFixed(2)}<`));
@@ -111,11 +112,11 @@ test("restored storefront and admin product workflow", async () => {
   assert.match(body, /Swipe or drag/);
   assert.match(body, /itemtype="https:\/\/schema\.org\/Product"/);
   assert.match(body, /itemtype="https:\/\/schema\.org\/BreadcrumbList"/);
-  assert.match(body, /\/app\.js\?v=7/);
+  assert.match(body, /\/app\.js\?v=8/);
   assert.ok(body.includes(`>${(Number(sample.price) / 7.2).toFixed(2)}<`));
   await Promise.all(pending);
 
-  response = await worker.fetch(new Request("https://www.cnbuycha.com/app.js?v=7"), env, ctx);
+  response = await worker.fetch(new Request("https://www.cnbuycha.com/app.js?v=8"), env, ctx);
   assert.equal(response.status, 200);
   const appScript = await response.text();
   assert.match(appScript, /G-47YFQ43WE1/);
@@ -150,6 +151,7 @@ test("restored storefront and admin product workflow", async () => {
   body = await response.text();
   assert.equal(response.status, 200);
   assert.match(body, /价格（人民币 ¥）/);
+  assert.doesNotMatch(body, />CnFans<\/option>/);
   const csrf = body.match(/name="csrf" value="([^"]+)"/)?.[1];
   assert.ok(csrf);
 

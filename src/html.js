@@ -99,7 +99,7 @@ function footer(settings) {
     <p class="copyright">© ${new Date().getUTCFullYear()} CnBuyCha</p>
   </div>
 </footer>
-<script src="/app.js?v=7" defer></script>
+<script src="/app.js?v=8" defer></script>
 </body></html>`;
 }
 
@@ -134,7 +134,7 @@ function productCard(product, settings, className = "product-card glass-card") {
 }
 
 export function renderHome({ settings, categories, products, origin }) {
-  const categoryCards = categories.filter((category) => category.parent_id === 1 || category.id > 3).map((category) => {
+  const categoryCards = categories.filter((category) => Number(category.parent_id) === 1).map((category) => {
     const icon = categoryIcons[category.slug] || "fa-tags";
     return `<a href="/${escapeHtml(category.slug)}/" class="category-item glass-card">
       <div class="category-icon"><i class="fas ${icon}"></i></div>
@@ -193,7 +193,7 @@ export function renderProductList({ settings, categories, currentCategory, produ
   const description = currentCategory?.seo_description || `Browse ${total} China shopping spreadsheet finds with product photos, source prices and direct seller links.`;
   const baseUrl = pathname.endsWith("/") ? pathname : `${pathname}/`;
   const categoryButtons = [`<a class="filter-btn${!currentCategory ? " active" : ""}" href="/AllProducts/"><span class="btn-text">ALL</span></a>`]
-    .concat(categories.filter((item) => item.id > 3).map((item) => `<a class="filter-btn${currentCategory?.id === item.id ? " active" : ""}" href="/${escapeHtml(item.slug)}/"><span class="btn-text">${escapeHtml(item.name)}</span></a>`)).join("");
+    .concat(categories.filter((item) => Number(item.parent_id) === 1).map((item) => `<a class="filter-btn${currentCategory?.id === item.id ? " active" : ""}" href="/${escapeHtml(item.slug)}/"><span class="btn-text">${escapeHtml(item.name)}</span></a>`)).join("");
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const sortLink = (value, icon, label) => {
     const params = new URLSearchParams();
@@ -392,7 +392,7 @@ export function renderAdminProducts({ session, products, total, page, query, cny
 export function renderProductForm({ session, categories, product = null, error = "" }) {
   const isEdit = Boolean(product);
   const imageRows = (product?.images || []).map((image) => `<label class="existing-image"><img src="${escapeHtml(safeUrl(image.url, PLACEHOLDER))}" alt=""><span><input type="checkbox" name="delete_image" value="${Number(image.id)}"> 删除</span></label>`).join("");
-  const categoryOptions = categories.filter((category) => category.id > 3).map((category) => `<option value="${Number(category.id)}" ${Number(product?.category_id) === Number(category.id) ? "selected" : ""}>${escapeHtml(category.name)}</option>`).join("");
+  const categoryOptions = categories.filter((category) => Number(category.parent_id) === 1).map((category) => `<option value="${Number(category.id)}" ${Number(product?.category_id) === Number(category.id) ? "selected" : ""}>${escapeHtml(category.name)}</option>`).join("");
   const body = `<div class="admin-title-row"><div><h1>${isEdit ? "编辑产品" : "增加产品"}</h1><p>${isEdit ? `产品 ID ${Number(product.id)}` : "填写产品资料并上传图片"}</p></div><a class="secondary-button" href="/yc.php">返回列表</a></div>
   <form class="product-form" method="post" action="/yc.php/products/save" enctype="multipart/form-data"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}"><input type="hidden" name="id" value="${isEdit ? Number(product.id) : ""}">
     <section class="form-card"><h2>基本信息</h2><div class="form-grid"><label class="span-2">产品标题<input name="title" required maxlength="200" value="${escapeHtml(product?.title || "")}"></label><label>分类<select name="category_id" required>${categoryOptions}</select></label><label>状态<select name="status"><option value="1" ${product?.status !== 0 ? "selected" : ""}>显示</option><option value="0" ${product?.status === 0 ? "selected" : ""}>隐藏</option></select></label><label>价格（人民币 ¥）<input type="number" name="price" min="0" step="0.01" value="${escapeHtml(product?.price || 0)}"></label><label>划线价（人民币 ¥）<input type="number" name="crossed_price" min="0" step="0.01" value="${escapeHtml(product?.crossed_price || 0)}"></label><label>商品平台 ID<input name="source_id" maxlength="100" value="${escapeHtml(product?.source_id || "")}"></label><label>原始购买链接<input type="url" name="source_url" value="${escapeHtml(product?.source_url || "")}"></label><label class="span-2">副标题<input name="subtitle" maxlength="200" value="${escapeHtml(product?.subtitle || "")}"></label></div></section>
