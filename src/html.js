@@ -217,21 +217,52 @@ export function renderProductList({ settings, categories, currentCategory, produ
 function purchasePlatforms(sourceId) {
   const id = encodeURIComponent(sourceId || "");
   const weidian = encodeURIComponent(`https://weidian.com/item.html?itemID=${sourceId || ""}`);
+  const favicon = (domain) => `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
   return [
+    // Product links that currently open the matching item.
     ["Litbuy", "/template/moban/pc/static/images/litbuy.webp", `https://litbuy.com/product/weidian/${id}?inviteCode=787S6YCQZ`],
     ["USFans", "/template/moban/pc/static/images/usfans.webp", `https://www.usfans.com/product/3/${id}?ref=SWD92F`],
-    ["Mulebuy", "/template/moban/pc/static/images/mulebuy.webp", `https://mulebuy.com/zh/product/?shop_type=weidian&id=${id}&ref=200232406`],
     ["Hoobuy", "/template/moban/pc/static/images/hoobuy.webp", `https://hoobuy.com/product/2/${id}?inviteCode=vXpLpmrX`],
-    ["Oopbuy", "/template/moban/pc/static/images/oopbuy.webp", `https://oopbuy.com/product/weidian/${id}?inviteCode=U68CWQBN5`],
-    ["AllChinaBuy", "/template/moban/pc/static/images/allchinabuy.webp", `https://www.allchinabuy.com/en/page/buy/?url=${weidian}&partnercode=wbVgOT`],
     ["Kakobuy", "/template/moban/pc/static/images/kakobuy.webp", `https://kakobuy.com/item/details?url=${weidian}&affcode=rf8x8`],
     ["OOTDBuy", "/template/moban/pc/static/images/ootdbuy.png", `https://www.ootdbuy.com/goods/details?id=${id}&channel=weidian&inviteCode=179LQ1SVA`],
     ["OrientDig", "/template/moban/pc/static/images/orientdig.webp", `https://orientdig.com/product/?shop_type=weidian&id=${id}&ref=100114240`],
     ["Superbuy", "/template/moban/pc/static/images/superbuy.webp", `https://www.superbuy.com/en/page/buy/?url=${weidian}&partnercode=ES7pVI`],
-    ["Sugargoo", "/template/moban/pc/static/images/sugargoo.webp", `https://www.sugargoo.com/#/home/productDetail?productLink=${weidian}&memberId=1771881989097259278`],
     ["LoveGoBuy", "/template/moban/pc/static/images/lovegobuy.webp", `https://www.lovegobuy.com/product?id=${id}&shop_type=weidian&invite_code=161CPG`],
-    ["GTBuy", "https://www.google.com/s2/favicons?domain=gtbuy.com&sz=128", `https://gtbuy.com/product/2/${id}`],
-    ["SinaBuy", "https://www.google.com/s2/favicons?domain=sinabuy.com&sz=128", `https://sinabuy.com/product/2/${id}`],
+    ["JoyaGoo", favicon("joyagoo.com"), `https://joyagoo.com/product?id=${id}&platform=WEIDIAN`],
+    ["HipoBuy", favicon("hipobuy.com"), `https://hipobuy.com/product/weidian/${id}`],
+    ["FishGoo", favicon("fishgoo.com"), `https://www.fishgoo.com/#/product?productLink=${weidian}`],
+    ["RizzitGo", favicon("rizzitgo.com"), `https://www.rizzitgo.com/detailPage?goodsId=${id}&source=3`],
+    ["GTBuy", favicon("gtbuy.com"), `https://gtbuy.com/product/2/${id}`],
+    ["SinaBuy", favicon("sinabuy.com"), `https://sinabuy.com/product/2/${id}`],
+    ["CSSBuy", favicon("cssbuy.com"), `https://www.cssbuy.com/item-micro-${id}.html`],
+    ["LoongBuy", favicon("loongbuy.com"), `https://www.loongbuy.com/product-details?weidian=${id}`],
+    ["VigorBuy", favicon("vigorbuy.com"), `https://vigorbuy.com/product/2/${id}?utm_source=website&utm_medium=share&utm_campaign=product_details&utm_content=${id}`],
+
+    // Kept for users but placed last because the platform currently requires
+    // sign-in, redirects to its homepage, returns an error, or is unavailable.
+    ["Oopbuy", "/template/moban/pc/static/images/oopbuy.webp", `https://oopbuy.com/product/weidian/${id}?inviteCode=U68CWQBN5`],
+    ["Sugargoo", "/template/moban/pc/static/images/sugargoo.webp", `https://www.sugargoo.com/#/home/productDetail?productLink=${weidian}&memberId=1771881989097259278`],
+    ["EastMallBuy", favicon("eastmallbuy.com"), `https://eastmallbuy.com/index/item/index.html?searchlang=en&url=${weidian}`],
+    ["BoonBuy", favicon("boonbuy.com"), `https://boonbuy.com/product/2/${id}`],
+    ["BBDbuy", favicon("bbdbuyeu.com"), `https://www.bbdbuyeu.com/goods/WEIDIAN/${id}?from=search`],
+    ["iTaoBuy", favicon("itaobuy.com"), `https://www.itaobuy.com/product-detail?url=${weidian}`],
+    ["OSSBuy", favicon("ossbuy.com"), `https://www.ossbuy.com/product-detail?url=${weidian}&spider_token=4572`],
+    ["HubBuy", favicon("hubbuy.com"), `https://www.hubbuy.com/product/2/${id}?utm_source=website&utm_medium=share&utm_campaign=product_details&utm_content=${id}`],
+    ["ACBuy", favicon("acbuy.com"), `https://www.acbuy.com/product?id=${id}&source=WD`],
+    ["SpanBuy", favicon("spanbuy.com"), "https://spanbuy.com/"],
+    ["LoloBuy", favicon("lolobuy.com"), "https://www.lolobuy.com/"],
+    ["FansBuy", favicon("fansbuy.com"), `https://fansbuy.com/product/2/${id}`],
+    ["GoatedBuy", favicon("goatedbuy.com"), "https://goatedbuy.com/"],
+    ["PantherBuy", favicon("pantherbuy.com"), `https://pantherbuy.com/product/2/${id}`],
+    ["TigBuy", favicon("tigbuy.com"), "https://tigbuy.com/"],
+    ["BaseTao", favicon("basetao.com"), `https://www.basetao.com/best-taobao-agent-service/products/agent/weidian/${id}.html`],
+    ["PikoBuy", favicon("pikobuy.com"), `https://pikobuy.com/product/2/${id}`],
+    ["PonyBuy", favicon("ponybuy.com"), `https://ponybuy.com/en-gb/goods?product_id=${id}&platform=3`],
+    ["MyCNBox", favicon("mycnbox.com"), `https://mycnbox.com/product/2/${id}`],
+    ["PandaBuy", favicon("pandabuy.com"), `https://www.pandabuy.com/product?url=${weidian}`],
+    ["HagoBuy", favicon("hagobuy.com"), `https://www.hagobuy.com/item/details?url=${weidian}`],
+    ["Mulebuy", "/template/moban/pc/static/images/mulebuy.webp", `https://mulebuy.com/zh/product/?shop_type=weidian&id=${id}&ref=200232406`],
+    ["AllChinaBuy", "/template/moban/pc/static/images/allchinabuy.webp", `https://www.allchinabuy.com/en/page/buy/?url=${weidian}&partnercode=wbVgOT`],
   ];
 }
 
@@ -273,7 +304,7 @@ export function renderProductDetail({ settings, product, related, origin }) {
   ${product.description ? `<section class="product-copy glass-card"><h2>Product information</h2><p>${escapeHtml(product.description).replaceAll("\n", "<br>")}</p></section>` : ""}
   <section class="product-list"><h2 class="section-title">Related Products</h2><div class="product-grid">${related.map((item) => productCard(item, settings)).join("")}</div></section>
 </main>
-<div class="platform-modal" id="platformModal" hidden><div class="platform-modal-content"><button class="close-modal" type="button" data-close-modal>&times;</button><h3>Select Purchase Platform</h3><p class="modal-note">Verified product links for this item.</p><div class="platform-list">${platforms.map(([name, image, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="nofollow noopener noreferrer" class="platform-option"><img src="${escapeHtml(image)}" alt="${escapeHtml(name)} logo" width="50" height="50" loading="lazy" decoding="async"><span>${escapeHtml(name)}</span></a>`).join("")}</div></div></div>
+<div class="platform-modal" id="platformModal" hidden><div class="platform-modal-content"><button class="close-modal" type="button" data-close-modal>&times;</button><h3>Select Purchase Platform</h3><p class="modal-note">Choose an agent to open its purchase page.</p><div class="platform-list">${platforms.map(([name, image, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="nofollow noopener noreferrer" class="platform-option"><img src="${escapeHtml(image)}" alt="${escapeHtml(name)} logo" width="50" height="50" loading="lazy" decoding="async"><span>${escapeHtml(name)}</span></a>`).join("")}</div></div></div>
 <div class="copy-success" id="copySuccess"><i class="fas fa-check-circle"></i> Link copied</div>
 ${footer(settings)}`;
 }

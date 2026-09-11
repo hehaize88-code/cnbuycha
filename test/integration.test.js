@@ -105,14 +105,30 @@ test("restored storefront and admin product workflow", async () => {
   body = await response.text();
   assert.match(body, /Select Purchase Platform/);
   const platformHrefs = [...body.matchAll(/<a href="([^"]+)"[^>]*class="platform-option"/g)].map((match) => match[1]);
-  assert.equal(platformHrefs.length, 14);
-  assert.ok(platformHrefs.every((href) => href.includes(sample.source_id)), "every purchase option must identify the current product");
+  const platformNames = [...body.matchAll(/<a href="[^"]+"[^>]*class="platform-option"[^>]*>.*?<span>([^<]+)<\/span><\/a>/g)].map((match) => match[1]);
+  assert.equal(platformHrefs.length, 40);
+  assert.equal(platformNames.length, 40);
+  assert.match(body, />JoyaGoo<\/span>/);
+  assert.match(body, />HipoBuy<\/span>/);
+  assert.match(body, />FishGoo<\/span>/);
   assert.match(body, />GTBuy<\/span>/);
   assert.match(body, />SinaBuy<\/span>/);
+  assert.match(body, />CSSBuy<\/span>/);
+  assert.match(body, />LoongBuy<\/span>/);
+  assert.match(body, />VigorBuy<\/span>/);
   assert.match(body, /gtbuy\.com\/product\/2\//);
   assert.match(body, /sinabuy\.com\/product\/2\//);
-  assert.doesNotMatch(body, />SpanBuy<\/span>|>LoloBuy<\/span>|>GoatedBuy<\/span>|>TigBuy<\/span>/);
-  assert.doesNotMatch(body, />BoonBuy<\/span>|>MyCNBox<\/span>|>FansBuy<\/span>|>PantherBuy<\/span>|>HubBuy<\/span>/);
+  assert.match(body, /www\.rizzitgo\.com\/detailPage\?goodsId=.*&amp;source=3/);
+  assert.doesNotMatch(body, /rizzitgo\.com\/detail-page\//);
+  assert.match(body, />Mulebuy<\/span>|>Oopbuy<\/span>|>AllChinaBuy<\/span>|>Sugargoo<\/span>/);
+  assert.match(body, />RizzitGo<\/span>|>SpanBuy<\/span>|>LoloBuy<\/span>|>FansBuy<\/span>|>GoatedBuy<\/span>|>PantherBuy<\/span>|>TigBuy<\/span>|>BaseTao<\/span>/);
+  assert.match(body, />EastMallBuy<\/span>|>BoonBuy<\/span>|>BBDbuy<\/span>|>iTaoBuy<\/span>|>OSSBuy<\/span>|>HubBuy<\/span>|>ACBuy<\/span>/);
+  assert.match(body, />PonyBuy<\/span>|>MyCNBox<\/span>|>PandaBuy<\/span>|>PikoBuy<\/span>|>HagoBuy<\/span>/);
+  assert.deepEqual(platformNames.slice(-23), [
+    "Oopbuy", "Sugargoo", "EastMallBuy", "BoonBuy", "BBDbuy", "iTaoBuy", "OSSBuy", "HubBuy", "ACBuy",
+    "SpanBuy", "LoloBuy", "FansBuy", "GoatedBuy", "PantherBuy", "TigBuy", "BaseTao",
+    "PikoBuy", "PonyBuy", "MyCNBox", "PandaBuy", "HagoBuy", "Mulebuy", "AllChinaBuy",
+  ]);
   assert.match(body, /data-product-gallery/);
   assert.match(body, /data-gallery-track/);
   assert.match(body, /data-gallery-slide/);
