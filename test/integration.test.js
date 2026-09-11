@@ -104,6 +104,11 @@ test("restored storefront and admin product workflow", async () => {
   assert.equal(response.status, 200);
   body = await response.text();
   assert.match(body, /Select Purchase Platform/);
+  assert.equal((body.match(/class="platform-option"/g) || []).length, 40);
+  assert.match(body, />JoyaGoo<\/span>/);
+  assert.match(body, />BaseTao<\/span>/);
+  assert.match(body, /google\.com\/s2\/favicons\?domain=joyagoo\.com&amp;sz=128/);
+  assert.match(body, /acbuy\.com\/product\?id=.*&amp;source=WD/);
   assert.match(body, /data-product-gallery/);
   assert.match(body, /data-gallery-track/);
   assert.match(body, /data-gallery-slide/);
