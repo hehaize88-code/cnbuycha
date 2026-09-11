@@ -109,6 +109,14 @@ test("restored storefront and admin product workflow", async () => {
   assert.match(body, />BaseTao<\/span>/);
   assert.match(body, /google\.com\/s2\/favicons\?domain=joyagoo\.com&amp;sz=128/);
   assert.match(body, /acbuy\.com\/product\?id=.*&amp;source=WD/);
+  assert.match(body, /href="https:\/\/spanbuy\.com\/"[^>]*class="platform-option"/);
+  assert.match(body, /href="https:\/\/www\.lolobuy\.com\/"[^>]*class="platform-option"/);
+  assert.match(body, /href="https:\/\/goatedbuy\.com\/"[^>]*class="platform-option"/);
+  assert.match(body, /href="https:\/\/tigbuy\.com\/"[^>]*class="platform-option"/);
+  assert.doesNotMatch(body, /spanbuy\.com\/product\/2\//);
+  assert.doesNotMatch(body, /lolobuy\.com\/productDetail/);
+  assert.doesNotMatch(body, /goatedbuy\.com\/product\/2\//);
+  assert.doesNotMatch(body, /tigbuy\.com\/product\/2\//);
   assert.match(body, /data-product-gallery/);
   assert.match(body, /data-gallery-track/);
   assert.match(body, /data-gallery-slide/);
