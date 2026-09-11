@@ -120,13 +120,18 @@ test("restored storefront and admin product workflow", async () => {
   assert.match(body, /sinabuy\.com\/product\/2\//);
   assert.match(body, /www\.rizzitgo\.com\/detailPage\?goodsId=.*&amp;source=3/);
   assert.doesNotMatch(body, /rizzitgo\.com\/detail-page\//);
+  assert.match(body, /lolobuy\.com\/productDetail\/.*\?url=https%3A%2F%2Fweidian\.com%2Fitem\.html%3FitemID%3D/);
+  assert.match(body, /fansbuy\.com\/item-micro-.*\.html\?url=https%3A%2F%2Fweidian\.com%2Fitem\.html%3FitemID%3D/);
+  assert.match(body, /m\.goatedbuy\.com\/#\/pages\/goods\/detail\?spuNo=.*&amp;channel=WEIDIAN/);
+  assert.match(body, /pantherbuy\.com\/product\?id=.*&amp;platform=WEIDIAN/);
+  assert.match(body, /tigbuy\.com\/item-micro-.*\.html/);
   assert.match(body, />Mulebuy<\/span>|>Oopbuy<\/span>|>AllChinaBuy<\/span>|>Sugargoo<\/span>/);
   assert.match(body, />RizzitGo<\/span>|>SpanBuy<\/span>|>LoloBuy<\/span>|>FansBuy<\/span>|>GoatedBuy<\/span>|>PantherBuy<\/span>|>TigBuy<\/span>|>BaseTao<\/span>/);
   assert.match(body, />EastMallBuy<\/span>|>BoonBuy<\/span>|>BBDbuy<\/span>|>iTaoBuy<\/span>|>OSSBuy<\/span>|>HubBuy<\/span>|>ACBuy<\/span>/);
   assert.match(body, />PonyBuy<\/span>|>MyCNBox<\/span>|>PandaBuy<\/span>|>PikoBuy<\/span>|>HagoBuy<\/span>/);
-  assert.deepEqual(platformNames.slice(-23), [
+  assert.deepEqual(platformNames.slice(-18), [
     "Oopbuy", "Sugargoo", "EastMallBuy", "BoonBuy", "BBDbuy", "iTaoBuy", "OSSBuy", "HubBuy", "ACBuy",
-    "SpanBuy", "LoloBuy", "FansBuy", "GoatedBuy", "PantherBuy", "TigBuy", "BaseTao",
+    "SpanBuy", "BaseTao",
     "PikoBuy", "PonyBuy", "MyCNBox", "PandaBuy", "HagoBuy", "Mulebuy", "AllChinaBuy",
   ]);
   assert.match(body, /data-product-gallery/);

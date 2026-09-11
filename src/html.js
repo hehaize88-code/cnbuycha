@@ -237,6 +237,11 @@ function purchasePlatforms(sourceId) {
     ["CSSBuy", favicon("cssbuy.com"), `https://www.cssbuy.com/item-micro-${id}.html`],
     ["LoongBuy", favicon("loongbuy.com"), `https://www.loongbuy.com/product-details?weidian=${id}`],
     ["VigorBuy", favicon("vigorbuy.com"), `https://vigorbuy.com/product/2/${id}?utm_source=website&utm_medium=share&utm_campaign=product_details&utm_content=${id}`],
+    ["LoloBuy", favicon("lolobuy.com"), `https://www.lolobuy.com/productDetail/${id}?url=${weidian}`],
+    ["FansBuy", favicon("fansbuy.com"), `https://fansbuy.com/item-micro-${id}.html?url=${weidian}`],
+    ["GoatedBuy", favicon("goatedbuy.com"), `https://m.goatedbuy.com/#/pages/goods/detail?spuNo=${id}&channel=WEIDIAN`],
+    ["PantherBuy", favicon("pantherbuy.com"), `https://pantherbuy.com/product?id=${id}&platform=WEIDIAN`],
+    ["TigBuy", favicon("tigbuy.com"), `https://tigbuy.com/item-micro-${id}.html`],
 
     // Kept for users but placed last because the platform currently requires
     // sign-in, redirects to its homepage, returns an error, or is unavailable.
@@ -250,11 +255,6 @@ function purchasePlatforms(sourceId) {
     ["HubBuy", favicon("hubbuy.com"), `https://www.hubbuy.com/product/2/${id}?utm_source=website&utm_medium=share&utm_campaign=product_details&utm_content=${id}`],
     ["ACBuy", favicon("acbuy.com"), `https://www.acbuy.com/product?id=${id}&source=WD`],
     ["SpanBuy", favicon("spanbuy.com"), "https://spanbuy.com/"],
-    ["LoloBuy", favicon("lolobuy.com"), "https://www.lolobuy.com/"],
-    ["FansBuy", favicon("fansbuy.com"), `https://fansbuy.com/product/2/${id}`],
-    ["GoatedBuy", favicon("goatedbuy.com"), "https://goatedbuy.com/"],
-    ["PantherBuy", favicon("pantherbuy.com"), `https://pantherbuy.com/product/2/${id}`],
-    ["TigBuy", favicon("tigbuy.com"), "https://tigbuy.com/"],
     ["BaseTao", favicon("basetao.com"), `https://www.basetao.com/best-taobao-agent-service/products/agent/weidian/${id}.html`],
     ["PikoBuy", favicon("pikobuy.com"), `https://pikobuy.com/product/2/${id}`],
     ["PonyBuy", favicon("ponybuy.com"), `https://ponybuy.com/en-gb/goods?product_id=${id}&platform=3`],
