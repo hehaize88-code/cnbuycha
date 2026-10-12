@@ -256,7 +256,7 @@ function purchasePlatforms(sourceId) {
     ["ACBuy", favicon("acbuy.com"), `https://www.acbuy.com/product?id=${id}&source=WD`],
     ["SpanBuy", favicon("spanbuy.com"), "https://spanbuy.com/"],
     ["BaseTao", favicon("basetao.com"), `https://www.basetao.com/best-taobao-agent-service/products/agent/weidian/${id}.html`],
-    ["PikoBuy", favicon("pikobuy.com"), `https://pikobuy.com/product/2/${id}`],
+    ["PikoBuy", favicon("pikobuy.com"), `https://www.pikobuy.com/product/detail?productUrl=https://weidian.com/item.html?itemID=${id}`],
     ["PonyBuy", favicon("ponybuy.com"), `https://ponybuy.com/en-gb/goods?product_id=${id}&platform=3`],
     ["MyCNBox", favicon("mycnbox.com"), `https://mycnbox.com/product/2/${id}`],
     ["PandaBuy", favicon("pandabuy.com"), `https://www.pandabuy.com/product?url=${weidian}`],
