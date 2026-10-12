@@ -256,7 +256,7 @@ function purchasePlatforms(sourceId) {
     ["ACBuy", favicon("acbuy.com"), `https://www.acbuy.com/product?id=${id}&source=WD`],
     ["SpanBuy", favicon("spanbuy.com"), "https://spanbuy.com/"],
     ["BaseTao", favicon("basetao.com"), `https://www.basetao.com/best-taobao-agent-service/products/agent/weidian/${id}.html`],
-    ["PikoBuy", favicon("pikobuy.com"), `https://pikobuy.com/product/2/${id}`],
+    ["PikoBuy", "/template/moban/pc/static/images/pikobuy.png", `https://www.pikobuy.com/product/detail?productUrl=https://weidian.com/item.html?itemID=${id}`],
     ["PonyBuy", favicon("ponybuy.com"), `https://ponybuy.com/en-gb/goods?product_id=${id}&platform=3`],
     ["MyCNBox", favicon("mycnbox.com"), `https://mycnbox.com/product/2/${id}`],
     ["PandaBuy", favicon("pandabuy.com"), `https://www.pandabuy.com/product?url=${weidian}`],
@@ -304,7 +304,7 @@ export function renderProductDetail({ settings, product, related, origin }) {
   ${product.description ? `<section class="product-copy glass-card"><h2>Product information</h2><p>${escapeHtml(product.description).replaceAll("\n", "<br>")}</p></section>` : ""}
   <section class="product-list"><h2 class="section-title">Related Products</h2><div class="product-grid">${related.map((item) => productCard(item, settings)).join("")}</div></section>
 </main>
-<div class="platform-modal" id="platformModal" hidden><div class="platform-modal-content"><button class="close-modal" type="button" data-close-modal>&times;</button><h3>Select Purchase Platform</h3><p class="modal-note">Choose an agent to open its purchase page.</p><div class="platform-list">${platforms.map(([name, image, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="nofollow noopener noreferrer" class="platform-option"><img src="${escapeHtml(image)}" alt="${escapeHtml(name)} logo" width="50" height="50" loading="lazy" decoding="async"><span>${escapeHtml(name)}</span></a>`).join("")}</div></div></div>
+<div class="platform-modal" id="platformModal" hidden><div class="platform-modal-content"><button class="close-modal" type="button" data-close-modal>&times;</button><h3>Select Purchase Platform</h3><p class="modal-note">Choose an agent to open its purchase page.</p><div class="platform-list">${platforms.map(([name, image, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="nofollow noopener noreferrer" class="platform-option"><img src="${escapeHtml(image)}" alt="${escapeHtml(name)} logo" width="50" height="50"${name === "PikoBuy" ? ' style="width:100%;max-width:100px;background:#fff;border-radius:6px;padding:6px;box-sizing:border-box"' : ""} loading="lazy" decoding="async"><span>${escapeHtml(name)}</span></a>`).join("")}</div></div></div>
 <div class="copy-success" id="copySuccess"><i class="fas fa-check-circle"></i> Link copied</div>
 ${footer(settings)}`;
 }
